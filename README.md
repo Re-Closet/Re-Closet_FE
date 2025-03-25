@@ -17,5 +17,5 @@ samples, guidance on mobile development, and a full API reference.
 
 ## GIF (현재 진행중)
 <p align="center">
-  <img src="" width="200">
+  <img src="https://github.com/user-attachments/assets/756a30af-19ab-4c01-9dc2-ba858cd56a79" width="200">
 </p>
