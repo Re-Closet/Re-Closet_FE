@@ -15,6 +15,7 @@ class _HomeScreen extends State<HomeScreen> {
 
     // TODO: implement build
     return Scaffold(
+      backgroundColor: const Color(0xffF4F3FF),
       body: SingleChildScrollView(
         child: Stack(
           children: [
