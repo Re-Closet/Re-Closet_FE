@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../widgets/online_donation_card.dart';
+import 'package:flutter_flip_card/flutter_flip_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,6 +14,10 @@ class _HomeScreen extends State<HomeScreen> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final FlipCardController controller1 = FlipCardController();
+    final FlipCardController controller2 = FlipCardController();
+    final FlipCardController controller3 = FlipCardController();
+    final FlipCardController controller4 = FlipCardController();
 
     // TODO: implement build
     return Scaffold(
@@ -162,37 +168,60 @@ class _HomeScreen extends State<HomeScreen> {
                     ),
                   ),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      donationCard(
-                        imagePath: 'assets/images/otcan_logo.png',
-                        cardWidth: screenWidth * 0.4341,
-                        cardHeight: screenHeight * 0.1774,
-                        imageWidth: screenWidth * 0.1717,
-                        imageHeight: screenHeight * 0.1045,
-                      ),
-                      donationCard(
-                        imagePath: 'assets/images/goodwill_logo.png',
-                        cardWidth: screenWidth * 0.4341,
-                        cardHeight: screenHeight * 0.1774,
-                        imageWidth: screenWidth * 0.1851,
-                        imageHeight: screenHeight * 0.1045,
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        DonationCard(
+                          controller: controller1,
+                          frontImagePath: 'assets/images/otcan_logo.png',
+                          backImagePath: 'assets/images/otcan_logo.png',
+                          cardWidth: screenWidth * 0.4341,
+                          cardHeight: screenHeight * 0.1774,
+                          imageWidth: screenWidth * 0.1717,
+                          imageHeight: screenHeight * 0.1045,
+                        ),
+                        DonationCard(
+                          controller: controller2,
+                          frontImagePath: 'assets/images/goodwill_logo.png',
+                          backImagePath: 'assets/images/goodwill_logo.png',
+                          cardWidth: screenWidth * 0.4341,
+                          cardHeight: screenHeight * 0.1774,
+                          imageWidth: screenWidth * 0.1851,
+                          imageHeight: screenHeight * 0.1045,
+                        ),
+                      ],
+                    ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      donationCard(
-                        imagePath: 'assets/images/beautifulshop_logo.png',
+                      // 위젯 빌드할 때
+                      // donationCard(
+                      //   controller: controller,
+                      //   frontImagePath: 'image/01.png',
+                      //   backImagePath: 'image/02.jpg',
+                      //   cardWidth: 140,
+                      //   cardHeight: 200,
+                      //   imageWidth: 120,
+                      //   imageHeight: 180,
+                      // );
+
+                      DonationCard(
+                        controller: controller3,
+                        frontImagePath: 'assets/images/beautifulshop_logo.png',
+                        backImagePath: 'assets/images/beautifulshop_logo.png',
                         cardWidth: screenWidth * 0.4341,
                         cardHeight: screenHeight * 0.1774,
                         imageWidth: screenWidth * 0.3735,
                         imageHeight: screenHeight * 0.0891,
                       ),
-                      donationCard(
-                        imagePath: 'assets/images/newhope_logo.png',
+
+                      DonationCard(
+                        controller: controller4,
+                        frontImagePath: 'assets/images/newhope_logo.png',
+                        backImagePath: 'assets/images/newhope_logo.png',
                         cardWidth: screenWidth * 0.4341,
                         cardHeight: screenHeight * 0.1774,
                         imageWidth: screenWidth * 0.3,
@@ -204,30 +233,6 @@ class _HomeScreen extends State<HomeScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget donationCard({
-    required String imagePath,
-    required double cardWidth,
-    required double cardHeight,
-    required double imageWidth,
-    required double imageHeight,
-  }) {
-    return Container(
-      width: cardWidth,
-      height: cardHeight,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-      ),
-      child: Center(
-        child: Image.asset(
-          imagePath,
-          width: imageWidth,
-          height: imageHeight,
         ),
       ),
     );

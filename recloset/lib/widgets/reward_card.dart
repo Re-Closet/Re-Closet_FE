@@ -48,9 +48,9 @@ class _RewardCardState extends State<RewardCard> {
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: const Color.fromARGB(255, 228, 226, 254).withOpacity(0.9),
-              blurRadius: 12,
-              offset: const Offset(0, 6),
+              color: const Color.fromARGB(255, 179, 174, 255).withOpacity(0.9),
+              // blurRadius: 12,
+              offset: const Offset(4, 4),
             ),
           ],
         ),
