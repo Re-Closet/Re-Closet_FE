@@ -182,6 +182,7 @@ class _HomeScreen extends State<HomeScreen> {
                           cardHeight: screenHeight * 0.1774,
                           imageWidth: screenWidth * 0.1717,
                           imageHeight: screenHeight * 0.1045,
+                          url: 'https://otcan.org/godonation',
                         ),
                         DonationCard(
                           donationName: 'GOODWILL',
@@ -192,6 +193,8 @@ class _HomeScreen extends State<HomeScreen> {
                           cardHeight: screenHeight * 0.1774,
                           imageWidth: screenWidth * 0.1851,
                           imageHeight: screenHeight * 0.1045,
+                          url:
+                              'https://goodwillstore.org/donation/application.php',
                         ),
                       ],
                     ),
@@ -219,6 +222,8 @@ class _HomeScreen extends State<HomeScreen> {
                         cardHeight: screenHeight * 0.1774,
                         imageWidth: screenWidth * 0.3735,
                         imageHeight: screenHeight * 0.0891,
+                        url:
+                            'https://share.beautifulstore.org/select-way?utm_source=homepage&utm_medium=display&utm_content=top&_gl=1*aenboj*_gcl_au*OTQ2MjAzMDU0LjE3NDIxMzQ4NjQ.*_ga*MTA3MTM4NTEuMTc0MjEzNDg2NA..*_ga_NLGK74R7WV*MTc0MzA5MDAyMy43LjAuMTc0MzA5MDAyMy42MC4wLjA.&_ga=2.137134899.224096786.1743090022-10713851.1742134864',
                       ),
 
                       DonationCard(
@@ -230,6 +235,7 @@ class _HomeScreen extends State<HomeScreen> {
                         cardHeight: screenHeight * 0.1774,
                         imageWidth: screenWidth * 0.3,
                         imageHeight: screenHeight * 0.2388,
+                        url: 'https://m.youcan.or.kr/page/page169',
                       ),
                     ],
                   ),

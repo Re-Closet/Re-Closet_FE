@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_flip_card/flutter_flip_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DonationCard extends StatefulWidget {
   final FlipCardController controller;
@@ -10,6 +11,7 @@ class DonationCard extends StatefulWidget {
   final double imageWidth;
   final double imageHeight;
   final String donationName;
+  final String url;
 
   const DonationCard({
     super.key,
@@ -21,6 +23,7 @@ class DonationCard extends StatefulWidget {
     required this.imageWidth,
     required this.imageHeight,
     required this.donationName,
+    required this.url,
   });
 
   @override
@@ -29,6 +32,14 @@ class DonationCard extends StatefulWidget {
 
 class _DonationCardState extends State<DonationCard> {
   bool _isPressed = false;
+
+// URL 열기 함수
+  void _launchURL() async {
+    final Uri uri = Uri.parse(widget.url); // 외부에서 받은 url 사용
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch ${widget.url}';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,26 +120,29 @@ class _DonationCardState extends State<DonationCard> {
                   SizedBox(
                     height: widget.cardHeight * 0.4239,
                   ),
-                  Stack(
-                    alignment: Alignment.center, // 전체 Stack에서 중앙 정렬 적용
-                    children: [
-                      Container(
-                        width: widget.cardWidth * 0.8573,
-                        height: widget.cardHeight * 0.2334,
-                        decoration: BoxDecoration(
-                          color: const Color(0xff6C63FF),
-                          borderRadius: BorderRadius.circular(32),
+                  GestureDetector(
+                    onTap: _launchURL,
+                    child: Stack(
+                      alignment: Alignment.center, // 전체 Stack에서 중앙 정렬 적용
+                      children: [
+                        Container(
+                          width: widget.cardWidth * 0.8573,
+                          height: widget.cardHeight * 0.2334,
+                          decoration: BoxDecoration(
+                            color: const Color(0xff6C63FF),
+                            borderRadius: BorderRadius.circular(32),
+                          ),
                         ),
-                      ),
-                      const Text(
-                        'Go',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                        const Text(
+                          'Go',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
