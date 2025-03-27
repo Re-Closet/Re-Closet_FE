@@ -174,6 +174,7 @@ class _HomeScreen extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         DonationCard(
+                          donationName: 'text',
                           controller: controller1,
                           frontImagePath: 'assets/images/otcan_logo.png',
                           backImagePath: 'assets/images/otcan_logo.png',
@@ -183,6 +184,7 @@ class _HomeScreen extends State<HomeScreen> {
                           imageHeight: screenHeight * 0.1045,
                         ),
                         DonationCard(
+                          donationName: 'text',
                           controller: controller2,
                           frontImagePath: 'assets/images/goodwill_logo.png',
                           backImagePath: 'assets/images/goodwill_logo.png',
@@ -209,6 +211,7 @@ class _HomeScreen extends State<HomeScreen> {
                       // );
 
                       DonationCard(
+                        donationName: 'text',
                         controller: controller3,
                         frontImagePath: 'assets/images/beautifulshop_logo.png',
                         backImagePath: 'assets/images/beautifulshop_logo.png',
@@ -219,6 +222,7 @@ class _HomeScreen extends State<HomeScreen> {
                       ),
 
                       DonationCard(
+                        donationName: 'text',
                         controller: controller4,
                         frontImagePath: 'assets/images/newhope_logo.png',
                         backImagePath: 'assets/images/newhope_logo.png',

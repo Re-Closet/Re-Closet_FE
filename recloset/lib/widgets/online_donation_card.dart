@@ -9,6 +9,7 @@ class DonationCard extends StatefulWidget {
   final double cardHeight;
   final double imageWidth;
   final double imageHeight;
+  final String donationName;
 
   const DonationCard({
     super.key,
@@ -19,6 +20,7 @@ class DonationCard extends StatefulWidget {
     required this.cardHeight,
     required this.imageWidth,
     required this.imageHeight,
+    required this.donationName,
   });
 
   @override
@@ -51,7 +53,7 @@ class _DonationCardState extends State<DonationCard> {
         width: widget.cardWidth,
         height: widget.cardHeight,
         child: FlipCard(
-          // rotateSide: RotateSide.left,
+          rotateSide: RotateSide.left,
           onTapFlipping: false,
           axis: FlipAxis.horizontal,
           controller: widget.controller,
@@ -81,19 +83,53 @@ class _DonationCardState extends State<DonationCard> {
               ),
             ),
           ),
+
+          //후면
           backWidget: Container(
             height: widget.cardHeight,
             width: widget.cardWidth,
             decoration: BoxDecoration(
-              color: Colors.deepPurple[100],
+              color: Colors.white,
               borderRadius: BorderRadius.circular(32),
             ),
             child: Center(
-              child: Image.asset(
-                widget.backImagePath,
-                width: widget.imageWidth,
-                height: widget.imageHeight,
-                fit: BoxFit.fitHeight,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      widget.donationName,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: widget.cardHeight * 0.4239,
+                  ),
+                  Stack(
+                    alignment: Alignment.center, // 전체 Stack에서 중앙 정렬 적용
+                    children: [
+                      Container(
+                        width: widget.cardWidth * 0.8573,
+                        height: widget.cardHeight * 0.2334,
+                        decoration: BoxDecoration(
+                          color: const Color(0xff6C63FF),
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                      ),
+                      const Text(
+                        'Go',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
