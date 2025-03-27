@@ -57,6 +57,8 @@ class _DonationCardState extends State<DonationCard> {
           onTapFlipping: false,
           axis: FlipAxis.horizontal,
           controller: widget.controller,
+
+          //전면
           frontWidget: Center(
             child: Container(
               height: widget.cardHeight,
@@ -78,7 +80,6 @@ class _DonationCardState extends State<DonationCard> {
                   widget.frontImagePath,
                   width: widget.imageWidth,
                   height: widget.imageHeight,
-                  fit: BoxFit.fitHeight,
                 ),
               ),
             ),
