@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recloset/screens/reward.dart';
 import '../widgets/online_donation_card.dart';
 import 'package:flutter_flip_card/flutter_flip_card.dart';
 import '../widgets/bottom_navigation.dart';
@@ -73,54 +74,65 @@ class _HomeScreen extends State<HomeScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 30),
-                    child: Stack(
-                      children: [
-                        // my reward container 배경
-                        Container(
-                          width: screenWidth * 0.9027,
-                          height: screenHeight * 0.117,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(32),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 15.0,
-                              horizontal: 30,
-                            ), // 원하는 padding 값
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'point balance',
-                                      style: TextStyle(
-                                        color: Color(0xffCCCCCC),
-                                        fontSize: 14,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RewardScreen()),
+                        );
+                      },
+                      child: Stack(
+                        children: [
+                          // my reward container 배경
+                          Container(
+                            width: screenWidth * 0.9027,
+                            height: screenHeight * 0.117,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 15.0,
+                                horizontal: 30,
+                              ), // 원하는 padding 값
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'point balance',
+                                        style: TextStyle(
+                                          color: Color(0xffCCCCCC),
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 4), // 텍스트 사이 간격 추가
-                                    Text(
-                                      '1,980',
-                                      style: TextStyle(
-                                        color: Color(0xff6C63FF),
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
+                                      SizedBox(height: 4), // 텍스트 사이 간격 추가
+                                      Text(
+                                        '1,980',
+                                        style: TextStyle(
+                                          color: Color(0xff6C63FF),
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios_sharp,
-                                  color: Color(0xffCCCCCC),
-                                )
-                              ],
+                                    ],
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios_sharp,
+                                    color: Color(0xffCCCCCC),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const Text(
