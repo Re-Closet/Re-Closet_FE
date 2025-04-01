@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/online_donation_card.dart';
 import 'package:flutter_flip_card/flutter_flip_card.dart';
+import '../widgets/bottom_navigation.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,6 +11,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -28,7 +37,6 @@ class _HomeScreen extends State<HomeScreen> {
             Container(
               color: const Color(0xffF4F3FF),
             ),
-
             //상단 gradient 부분
             Container(
               height: 155,
@@ -244,6 +252,11 @@ class _HomeScreen extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        // (navigation index 전달)
+        currentIndex: _selectedIndex,
+        onTap: _onTabTapped,
       ),
     );
   }
