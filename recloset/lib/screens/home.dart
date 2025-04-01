@@ -75,7 +75,7 @@ class _HomeScreen extends State<HomeScreen> {
                     padding: const EdgeInsets.only(bottom: 30),
                     child: Stack(
                       children: [
-                        //reward container 배경
+                        // my reward container 배경
                         Container(
                           width: screenWidth * 0.9027,
                           height: screenHeight * 0.117,
@@ -136,13 +136,20 @@ class _HomeScreen extends State<HomeScreen> {
                     padding: const EdgeInsets.only(bottom: 30),
                     child: Stack(
                       children: [
-                        //reward container 배경
+                        //How to Donate 배경
                         Container(
                           width: screenWidth * 0.9027,
                           height: screenHeight * 0.157,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(32),
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(32)),
+                            gradient: LinearGradient(
+                              begin: Alignment.topRight,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Color(0xff9791FF),
+                                Color(0xffF3D1FB),
+                              ],
+                            ),
                           ),
                           child: const Padding(
                             padding: EdgeInsets.symmetric(
@@ -161,6 +168,10 @@ class _HomeScreen extends State<HomeScreen> {
                               ],
                             ),
                           ),
+                        ),
+                        Image.asset(
+                          'assets/images/how_to_donate_logo.png',
+                          width: screenWidth * 0.6166,
                         ),
                       ],
                     ),
