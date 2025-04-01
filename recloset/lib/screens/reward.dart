@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/reward.dart';
+import '../screens/reward_detail.dart';
+import '../widgets/status_badge.dart';
 
 class RewardScreen extends StatelessWidget {
   RewardScreen({super.key});
@@ -98,21 +100,7 @@ class RewardScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: _statusColor(reward.status),
-                                  borderRadius: BorderRadius.circular(10.5),
-                                ),
-                                child: Text(
-                                  reward.status.toLowerCase(),
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
+                              StatusBadge(status: reward.status),
                               const SizedBox(height: 4),
                             ],
                           ),
@@ -129,7 +117,13 @@ class RewardScreen extends StatelessWidget {
                         ],
                       ),
                       onTap: () {
-                        // 상세 페이지로 이동 또는 detailUrl 오픈
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                RewardDetailScreen(reward: reward),
+                          ),
+                        );
                       },
                     ),
                     Container(
