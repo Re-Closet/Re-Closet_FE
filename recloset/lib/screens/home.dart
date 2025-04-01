@@ -92,18 +92,20 @@ class _HomeScreen extends State<HomeScreen> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(32),
                             ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(
-                                vertical: 15.0,
-                                horizontal: 30,
-                              ), // 원하는 padding 값
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Column(
+                                  Image.asset(
+                                    'assets/images/face.png',
+                                    width: screenWidth * 0.22975,
+                                  ),
+                                  const SizedBox(width: 15),
+                                  const Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         'point balance',
@@ -112,7 +114,7 @@ class _HomeScreen extends State<HomeScreen> {
                                           fontSize: 14,
                                         ),
                                       ),
-                                      SizedBox(height: 4), // 텍스트 사이 간격 추가
+                                      SizedBox(height: 4),
                                       Text(
                                         '1,980',
                                         style: TextStyle(
@@ -123,9 +125,13 @@ class _HomeScreen extends State<HomeScreen> {
                                       ),
                                     ],
                                   ),
-                                  Icon(
+                                  const Spacer(), // 남은 공간을 차지해서 아이콘을 오른쪽으로 밀어줌
+                                  const Icon(
                                     Icons.arrow_forward_ios_sharp,
                                     color: Color(0xffCCCCCC),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
                                   )
                                 ],
                               ),
