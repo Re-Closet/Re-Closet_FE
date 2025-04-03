@@ -282,11 +282,7 @@ class _HomeScreen extends State<HomeScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        // (navigation index 전달)
-        currentIndex: _selectedIndex,
-        onTap: _onTabTapped,
-      ),
+      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 0),
     );
   }
 }
