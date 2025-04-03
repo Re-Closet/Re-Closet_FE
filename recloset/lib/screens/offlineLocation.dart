@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import '../widgets/bottom_navigation.dart';
 import '../data/markerdata.dart';
+import 'dart:ui' as ui;
 
 class OfflineLocation extends StatefulWidget {
   const OfflineLocation({super.key});
@@ -16,25 +17,113 @@ class _OfflineLocationState extends State<OfflineLocation> {
   LatLng _currentPosition = const LatLng(37.5665, 126.9780); // 기본값: 서울 시청
   bool _isLocationLoaded = false;
   final Set<Marker> _markers = {}; // 마커 모음
+
+  //icon init
   BitmapDescriptor? _customIcon; // 커스텀 마커 아이콘
   BitmapDescriptor? _goodwillIcon;
+  BitmapDescriptor? _hmIcon;
+
   @override
   void initState() {
     super.initState();
     _initMarkerData();
   }
 
+  void _showBSmarkers() {
+    if (_customIcon == null) return;
+
+    final customMarkers = markerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('custom_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _customIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.clear();
+      _markers.addAll(customMarkers);
+    });
+  }
+
+  void _showGWmarkers() {
+    if (_goodwillIcon == null) return;
+
+    final customMarkers = goodwillMarkerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('goodwill_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _goodwillIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.clear();
+      _markers.addAll(customMarkers);
+    });
+  }
+
+  void _showHMmarkers() {
+    if (_hmIcon == null) return;
+
+    final customMarkers = goodwillMarkerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('hm_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _hmIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.clear();
+      _markers.addAll(customMarkers);
+    });
+  }
+
+  void _showAllMarkers() {
+    _setCustomMarkers();
+    _setGoodwillMarkers();
+    _setHmMarkers();
+  }
+
+  //first Init
   Future<void> _initMarkerData() async {
     await _getCurrentLocation(); // 위치 먼저
+
+    //beautiful store icon
     _customIcon = await BitmapDescriptor.fromAssetImage(
       const ImageConfiguration(size: Size(78, 78)),
       'assets/images/marker.png',
     );
+
+    //goodwillIcon
     _goodwillIcon = await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(size: Size(78, 78)),
         'assets/images/goodwillmarker.png');
+
+    //hmIcon
+    _hmIcon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(78, 78)),
+        'assets/images/hm_marker.png');
+
     _setCustomMarkers(); // 마커 세팅
     _setGoodwillMarkers();
+    _setHmMarkers();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -66,7 +155,7 @@ class _OfflineLocationState extends State<OfflineLocation> {
     }
   }
 
-  //아름다운 가게 Marker
+  //Set Beautiful Store Marker
   void _setCustomMarkers() {
     if (_customIcon == null) return;
 
@@ -88,7 +177,7 @@ class _OfflineLocationState extends State<OfflineLocation> {
     });
   }
 
-  //Goodwill Store Marker
+  //Set Goodwill Store Marker
   void _setGoodwillMarkers() {
     if (_goodwillIcon == null) return;
 
@@ -110,6 +199,28 @@ class _OfflineLocationState extends State<OfflineLocation> {
     });
   }
 
+  //Set H&M Marker
+  void _setHmMarkers() {
+    if (_hmIcon == null) return;
+
+    final customMarkers = hmMarkerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('hm_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _hmIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.addAll(customMarkers);
+    });
+  }
+
 //marker 클릭 시, zoom: 19
   void _zoomToLocation(LatLng target) {
     _mapController?.animateCamera(
@@ -117,6 +228,18 @@ class _OfflineLocationState extends State<OfflineLocation> {
         CameraPosition(
           target: target,
           zoom: 19,
+        ),
+      ),
+    );
+  }
+
+  //marker 클릭 시, zoom: 19
+  void _zoomToFirstLocation(LatLng target) {
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: target,
+          zoom: 11,
         ),
       ),
     );
@@ -134,7 +257,7 @@ class _OfflineLocationState extends State<OfflineLocation> {
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _currentPosition,
-              zoom: 17,
+              zoom: 11,
             ),
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
@@ -148,61 +271,60 @@ class _OfflineLocationState extends State<OfflineLocation> {
             },
             markers: _markers,
           ),
-
-          Positioned(
-            top: screenHeight * 0.0814,
-            left: screenWidth * 0.04444,
-            child: SizedBox(
-              width: screenWidth * 0.4888,
-              height: screenHeight * 0.044111,
-              child: ElevatedButton(
-                onPressed: () {
-                  _zoomToLocation(_currentPosition);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+          Padding(
+            padding: EdgeInsets.only(top: screenHeight * 0.0814),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  const SizedBox(
+                    width: 30,
                   ),
-                  elevation: 5,
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.storefront, size: 20),
-                    SizedBox(width: 8),
-                    Text('Beautiful Store'),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: screenHeight * 0.0814,
-            left: screenWidth * 0.4888 + screenWidth * 0.08,
-            child: SizedBox(
-              width: screenWidth * 0.4888,
-              height: screenHeight * 0.044111,
-              child: ElevatedButton(
-                onPressed: () {
-                  _zoomToLocation(_currentPosition);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+                  _buildStoreButton(
+                    icon: Icons.remove_red_eye_outlined,
+                    label: 'View All',
+                    color: Colors.white,
+                    onPressed: () => _showAllMarkers(),
+                    screenWidth: screenWidth * 0.8,
+                    screenHeight: screenHeight,
                   ),
-                  elevation: 5,
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.storefront, size: 20),
-                    SizedBox(width: 8),
-                    Text('Goodwill store'),
-                  ],
-                ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  _buildStoreButton(
+                    icon: Icons.storefront_outlined,
+                    label: 'Beautiful Store',
+                    color: const Color(0xff7067FF),
+                    onPressed: () => _showBSmarkers(),
+                    screenWidth: screenWidth,
+                    screenHeight: screenHeight,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  _buildStoreButton(
+                    icon: Icons.storefront_outlined,
+                    label: 'Goodwill store',
+                    color: const Color(0xff34A853),
+                    onPressed: () => _showGWmarkers(),
+                    screenWidth: screenWidth,
+                    screenHeight: screenHeight,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  _buildStoreButton(
+                    icon: Icons.storefront_outlined,
+                    label: 'H&M',
+                    color: const Color(0xffCD2523),
+                    onPressed: () => _showHMmarkers(),
+                    screenWidth: screenWidth * 0.7,
+                    screenHeight: screenHeight,
+                  ),
+                  const SizedBox(
+                    width: 30,
+                  ),
+                ],
               ),
             ),
           ),
@@ -215,12 +337,56 @@ class _OfflineLocationState extends State<OfflineLocation> {
               onPressed: () {
                 _zoomToLocation(_currentPosition);
               },
-              child: const Icon(Icons.my_location),
+              child: const Icon(Icons.pin_drop),
+            ),
+          ),
+          Positioned(
+            bottom: screenHeight * 0.1864,
+            right: screenWidth * 0.02777,
+            child: FloatingActionButton(
+              onPressed: () {
+                _zoomToFirstLocation(_currentPosition);
+              },
+              child: const Icon(Icons.pin_drop_outlined),
             ),
           ),
         ],
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 2),
+    );
+  }
+
+  Widget _buildStoreButton({
+    required String label,
+    required Color color,
+    required VoidCallback onPressed,
+    required double screenWidth,
+    required double screenHeight,
+    required IconData icon,
+  }) {
+    return SizedBox(
+      width: screenWidth * 0.42,
+      height: screenHeight * 0.044111,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor:
+              color == Colors.white ? const Color(0xff303030) : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          elevation: 5,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 20),
+            const SizedBox(width: 8),
+            Text(label),
+          ],
+        ),
+      ),
     );
   }
 }

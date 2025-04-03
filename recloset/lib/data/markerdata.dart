@@ -33,3 +33,18 @@ final List<Map<String, dynamic>> goodwillMarkerData = [
   {'id': '굿윌스토어 밀알양천점', 'position': const LatLng(37.5252531, 126.8593364)},
   {'id': '굿윌스토어 밀알강남세움점', 'position': const LatLng(37.4870564, 127.106901)},
 ];
+
+final List<Map<String, dynamic>> hmMarkerData = [
+  {'id': 'H&M 용산아이파크몰점', 'position': const LatLng(37.533806, 126.958287)},
+  {'id': 'H&M 영등포타임스퀘어몰점', 'position': const LatLng(37.5170751, 126.9033411)},
+  {'id': 'H&M 홍대점', 'position': const LatLng(37.5546492, 126.9225199)},
+  {'id': 'H&M 가로수길점', 'position': const LatLng(37.5210682, 127.03414)},
+  {'id': 'H&M 롯데백화점김포공항점', 'position': const LatLng(37.5650592, 126.8029919)},
+  {'id': 'H&M 명동중앙길점', 'position': const LatLng(37.5635469, 126.9851428)},
+  {'id': 'H&M 신도림현대디큐브점', 'position': const LatLng(37.5085845, 126.8888977)},
+  {'id': 'H&M 마리오아울렛점', 'position': const LatLng(37.4784556, 126.8850161)},
+  {'id': 'H&M 코엑스점', 'position': const LatLng(37.5147697, 127.0632364)},
+  {'id': 'H&M 강남신세계점', 'position': const LatLng(37.5043637, 127.0036211)},
+  {'id': 'H&M 잠실롯데월드몰점', 'position': const LatLng(37.5133121, 127.1037107)},
+  {'id': 'H&M 롯데백화점 청량리점', 'position': const LatLng(37.5809769, 127.0469926)},
+];
