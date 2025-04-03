@@ -76,7 +76,7 @@ class _OfflineLocationState extends State<OfflineLocation> {
   void _showHMmarkers() {
     if (_hmIcon == null) return;
 
-    final customMarkers = goodwillMarkerData.map((data) {
+    final customMarkers = hmMarkerData.map((data) {
       final id = data['id'] as String;
       final position = data['position'] as LatLng;
 
