@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import '../widgets/bottom_navigation.dart';
+import '../data/markerdata.dart';
 
 class OfflineLocation extends StatefulWidget {
   const OfflineLocation({super.key});
@@ -14,9 +15,9 @@ class _OfflineLocationState extends State<OfflineLocation> {
   GoogleMapController? _mapController;
   LatLng _currentPosition = const LatLng(37.5665, 126.9780); // 기본값: 서울 시청
   bool _isLocationLoaded = false;
-  Set<Marker> _markers = {}; // 마커 모음
+  final Set<Marker> _markers = {}; // 마커 모음
   BitmapDescriptor? _customIcon; // 커스텀 마커 아이콘
-
+  BitmapDescriptor? _goodwillIcon;
   @override
   void initState() {
     super.initState();
@@ -29,7 +30,11 @@ class _OfflineLocationState extends State<OfflineLocation> {
       const ImageConfiguration(size: Size(78, 78)),
       'assets/images/marker.png',
     );
+    _goodwillIcon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(78, 78)),
+        'assets/images/goodwillmarker.png');
     _setCustomMarkers(); // 마커 세팅
+    _setGoodwillMarkers();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -61,112 +66,159 @@ class _OfflineLocationState extends State<OfflineLocation> {
     }
   }
 
+  //아름다운 가게 Marker
   void _setCustomMarkers() {
     if (_customIcon == null) return;
 
+    final customMarkers = markerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('custom_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _customIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
     setState(() {
-      _markers = {
-        Marker(
-          markerId: const MarkerId('아름다운가게 관악자명점'),
-          position: const LatLng(37.484608, 126.9373154),
-          infoWindow: const InfoWindow(title: '아름다운가게 관악자명점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 남성역점'),
-          position: const LatLng(37.4831831, 126.9755662),
-          infoWindow: const InfoWindow(title: '아름다운가게 남성역점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운 가게 영등포점'),
-          position: const LatLng(37.5190968, 126.9059359),
-          infoWindow: const InfoWindow(title: '아름다운 가게 영등포점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 서초점'),
-          position: const LatLng(37.4930764, 127.0176044),
-          infoWindow: const InfoWindow(title: '아름다운가게 서초점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 숙대입구점'),
-          position: const LatLng(37.5431183, 126.9728513),
-          infoWindow: const InfoWindow(title: '아름다운가게 숙대입구점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 안국점'),
-          position: const LatLng(37.5788203, 126.9849592),
-          infoWindow: const InfoWindow(title: '아름다운가게 안국점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 망원역점'),
-          position: const LatLng(37.5553083, 126.9101247),
-          infoWindow: const InfoWindow(title: '아름다운가게 망원역점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 개봉점'),
-          position: const LatLng(37.4970413, 126.8572128),
-          infoWindow: const InfoWindow(title: '아름다운가게 개봉점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 강남구청역점'),
-          position: const LatLng(37.5163937, 127.0378848),
-          infoWindow: const InfoWindow(title: '아름다운가게 강남구청역점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 압구정점'),
-          position: const LatLng(37.5273895, 127.030957),
-          infoWindow: const InfoWindow(title: '아름다운가게 압구정점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 목동점'),
-          position: const LatLng(37.5367306, 126.8822117),
-          infoWindow: const InfoWindow(title: '아름다운가게 목동점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 삼선교점'),
-          position: const LatLng(37.5885305, 127.0055957),
-          infoWindow: const InfoWindow(title: '아름다운가게 삼선교점'),
-          icon: _customIcon!,
-        ),
-        Marker(
-          markerId: const MarkerId('아름다운가게 광진화양점'),
-          position: const LatLng(37.548551, 127.068139),
-          infoWindow: const InfoWindow(title: '아름다운가게 광진화양점'),
-          icon: _customIcon!,
-        ),
-      };
+      _markers.addAll(customMarkers);
     });
   }
 
+  //Goodwill Store Marker
+  void _setGoodwillMarkers() {
+    if (_goodwillIcon == null) return;
+
+    final customMarkers = goodwillMarkerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('goodwill_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _goodwillIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.addAll(customMarkers);
+    });
+  }
+
+//marker 클릭 시, zoom: 19
+  void _zoomToLocation(LatLng target) {
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: target,
+          zoom: 19,
+        ),
+      ),
+    );
+  }
+
+  //UI 구성
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      body: GoogleMap(
-        initialCameraPosition: CameraPosition(
-          target: _currentPosition,
-          zoom: 17,
-        ),
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
-        onMapCreated: (controller) {
-          _mapController = controller;
-          if (_isLocationLoaded) {
-            _mapController!.animateCamera(
-              CameraUpdate.newLatLng(_currentPosition),
-            );
-          }
-        },
-        markers: _markers,
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: _currentPosition,
+              zoom: 17,
+            ),
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            onMapCreated: (controller) {
+              _mapController = controller;
+              if (_isLocationLoaded) {
+                _mapController!.animateCamera(
+                  CameraUpdate.newLatLng(_currentPosition),
+                );
+              }
+            },
+            markers: _markers,
+          ),
+
+          Positioned(
+            top: screenHeight * 0.0814,
+            left: screenWidth * 0.04444,
+            child: SizedBox(
+              width: screenWidth * 0.4888,
+              height: screenHeight * 0.044111,
+              child: ElevatedButton(
+                onPressed: () {
+                  _zoomToLocation(_currentPosition);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  elevation: 5,
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.storefront, size: 20),
+                    SizedBox(width: 8),
+                    Text('Beautiful Store'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: screenHeight * 0.0814,
+            left: screenWidth * 0.4888 + screenWidth * 0.08,
+            child: SizedBox(
+              width: screenWidth * 0.4888,
+              height: screenHeight * 0.044111,
+              child: ElevatedButton(
+                onPressed: () {
+                  _zoomToLocation(_currentPosition);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  elevation: 5,
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.storefront, size: 20),
+                    SizedBox(width: 8),
+                    Text('Goodwill store'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // 현재 내 위치로 이동
+          Positioned(
+            bottom: screenHeight * 0.1164,
+            right: screenWidth * 0.02777,
+            child: FloatingActionButton(
+              onPressed: () {
+                _zoomToLocation(_currentPosition);
+              },
+              child: const Icon(Icons.my_location),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 2),
     );
