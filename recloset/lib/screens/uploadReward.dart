@@ -87,7 +87,7 @@ class _UploadrewardState extends State<Uploadreward> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05555),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -113,29 +113,31 @@ class _UploadrewardState extends State<Uploadreward> {
                   });
                 },
                 children: <Widget>[
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: screenWidth * 0.165),
-                    child: Text(
-                      'Online',
-                      style: TextStyle(
-                        color: isSelected[0]
-                            ? Colors.white
-                            : const Color(0xff2C2C2C),
-                        fontSize: 16,
+                  SizedBox(
+                    width: (screenWidth - screenWidth * 0.1222) / 2,
+                    child: Center(
+                      child: Text(
+                        'Online',
+                        style: TextStyle(
+                          color: isSelected[0]
+                              ? Colors.white
+                              : const Color(0xff2C2C2C),
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: screenWidth * 0.165),
-                    child: Text(
-                      'Offline',
-                      style: TextStyle(
-                        color: isSelected[1]
-                            ? Colors.white
-                            : const Color(0xff2C2C2C),
-                        fontSize: 16,
+                  SizedBox(
+                    width: (screenWidth - screenWidth * 0.1222) / 2,
+                    child: Center(
+                      child: Text(
+                        'Offline',
+                        style: TextStyle(
+                          color: isSelected[1]
+                              ? Colors.white
+                              : const Color(0xff2C2C2C),
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
@@ -248,13 +250,29 @@ class _UploadrewardState extends State<Uploadreward> {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return _image != null
-        ? Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 1,
+        ? GestureDetector(
+            onTap: () => getImage(ImageSource.gallery),
+            child: Container(
+              width: screenWidth - screenWidth * 0.1222,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(21),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: const Offset(2, 2), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(21),
+                child: Image.file(
+                  File(_image!.path),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-            child: Image.file(File(_image!.path)), //가져온 이미지를 화면에 띄워주는 코드
           )
         : GestureDetector(
             onTap: () => getImage(ImageSource.gallery),
@@ -266,7 +284,6 @@ class _UploadrewardState extends State<Uploadreward> {
               color: const Color(0xff7067FF),
               child: SizedBox(
                 width: screenWidth * 0.8888,
-                height: screenHeight * 0.1792,
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(

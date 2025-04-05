@@ -38,53 +38,47 @@ class _IntroScreenState extends State<IntroScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Padding(
-              padding: EdgeInsets.only(
-                top: 60,
-                bottom: 100,
+            const Text(
+              'Recloset',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
               ),
-              child: Text(
-                'Recloset',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+            ),
+            SizedBox(
+              height: screenHeight * 0.08149,
             ),
             Image.asset(
               'assets/images/intro.png',
-              width: 283,
-              height: 344,
+              width: screenWidth * 0.7861,
+              height: screenHeight * 0.4004,
             ),
-            const Padding(
-              padding: EdgeInsets.only(
-                top: 30,
-                bottom: 50,
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(left: 40),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Get started with \nDonating your clothes. ',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 23,
-                        fontWeight: FontWeight.w700,
-                      ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05555),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Get started with \nDonating your clothes. ',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 23,
+                      fontWeight: FontWeight.w700,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
+            SizedBox(
+              height: screenHeight * 0.09731,
             ),
 
             //Get Started button
             BasicLgButton(
               textColor: const Color(0xff081854),
-              width: screenWidth * 0.9222,
-              height: screenHeight * 0.0873,
+              width: screenWidth * 0.7861,
+              height: screenHeight * 0.06731,
               text: 'Get Started',
               onPressed: () => _handleButtonPressed(context),
               color: const Color(0xffF4F3FF),

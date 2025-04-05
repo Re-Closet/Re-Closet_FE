@@ -114,8 +114,8 @@ class _LoginScreen extends State<LoginScreen> {
             //로그인 버튼
             BasicLgButton(
               textColor: const Color(0xff081854),
-              width: screenWidth * 0.9222,
-              height: screenHeight * 0.0873,
+              width: screenWidth * 0.7861,
+              height: screenHeight * 0.06731,
               text: 'Login',
               onPressed: () => _handleButtonPressed(context),
               color: const Color(0xffF4F3FF),
