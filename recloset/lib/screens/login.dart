@@ -20,6 +20,8 @@ void _handleButtonPressed(BuildContext context) {
 class _LoginScreen extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
@@ -111,8 +113,12 @@ class _LoginScreen extends State<LoginScreen> {
 
             //로그인 버튼
             BasicLgButton(
+              textColor: const Color(0xff081854),
+              width: screenWidth * 0.9222,
+              height: screenHeight * 0.0873,
               text: 'Login',
               onPressed: () => _handleButtonPressed(context),
+              color: const Color(0xffF4F3FF),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
