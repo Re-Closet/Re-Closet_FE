@@ -48,3 +48,20 @@ final List<Map<String, dynamic>> hmMarkerData = [
   {'id': 'H&M 잠실롯데월드몰점', 'position': const LatLng(37.5133121, 127.1037107)},
   {'id': 'H&M 롯데백화점 청량리점', 'position': const LatLng(37.5809769, 127.0469926)},
 ];
+
+final List<Map<String, dynamic>> akMarkerData = [
+  {'id': '아르켓 아이파크몰 용산', 'position': const LatLng(37.529557, 126.9641567)},
+  {'id': '아르켓 더현대 서울', 'position': const LatLng(37.526056, 126.9283112)},
+  {'id': '아르켓 가로수길', 'position': const LatLng(37.5198694, 127.0232473)},
+];
+
+final List<Map<String, dynamic>> saMarkerData = [
+  {'id': '구세군희망나누미상계점', 'position': const LatLng(37.6597835, 127.0691598)},
+  {'id': '구세군희망나누미 북아현점', 'position': const LatLng(37.5624168, 126.9543856)},
+  {'id': '구세군희망나누미 종암점', 'position': const LatLng(37.60034, 127.0352175)},
+  {'id': '구세군희망나누미 역촌점', 'position': const LatLng(37.6047811, 126.9184584)},
+  {'id': '구세군희망나누미 월곡점', 'position': const LatLng(37.6096128, 127.051668)},
+  {'id': '구세군희망나누미 구파발점', 'position': const LatLng(37.636298, 126.9315055)},
+  {'id': '구세군희망나누미 솔밭공원점', 'position': const LatLng(37.6456264, 127.0157045)},
+  {'id': '구세군희망나누미우이점', 'position': const LatLng(37.6578392, 127.0134462)},
+];

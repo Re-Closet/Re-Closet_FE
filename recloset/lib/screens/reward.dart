@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recloset/screens/uploadReward.dart';
 import '../models/reward.dart';
 import '../screens/reward_detail.dart';
 import '../widgets/status_badge.dart';
@@ -67,6 +68,23 @@ class RewardScreen extends StatelessWidget {
             Navigator.pop(context); // ← 뒤로 가기 기능
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.add,
+              color: Color(0xff979797),
+              size: 30,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Uploadreward(),
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: Column(
         children: [

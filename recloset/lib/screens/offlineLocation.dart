@@ -22,6 +22,8 @@ class _OfflineLocationState extends State<OfflineLocation> {
   BitmapDescriptor? _customIcon; // 커스텀 마커 아이콘
   BitmapDescriptor? _goodwillIcon;
   BitmapDescriptor? _hmIcon;
+  BitmapDescriptor? _arketIcon;
+  BitmapDescriptor? _saIcon;
 
   @override
   void initState() {
@@ -29,6 +31,7 @@ class _OfflineLocationState extends State<OfflineLocation> {
     _initMarkerData();
   }
 
+//show markers 함수
   void _showBSmarkers() {
     if (_customIcon == null) return;
 
@@ -95,10 +98,56 @@ class _OfflineLocationState extends State<OfflineLocation> {
     });
   }
 
+  void _showArkeTmarkers() {
+    if (_arketIcon == null) return;
+
+    final customMarkers = akMarkerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('arket_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _arketIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.clear();
+      _markers.addAll(customMarkers);
+    });
+  }
+
+  void _showSAmarkers() {
+    if (_saIcon == null) return;
+
+    final customMarkers = saMarkerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('sa_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _saIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.clear();
+      _markers.addAll(customMarkers);
+    });
+  }
+
   void _showAllMarkers() {
     _setCustomMarkers();
     _setGoodwillMarkers();
     _setHmMarkers();
+    _setarketMarkers();
+    _setSAMarkers();
   }
 
   //first Init
@@ -121,9 +170,19 @@ class _OfflineLocationState extends State<OfflineLocation> {
         const ImageConfiguration(size: Size(78, 78)),
         'assets/images/hm_marker.png');
 
+    _arketIcon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(78, 78)),
+        'assets/images/arket_marker.png');
+
+    _saIcon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(78, 78)),
+        'assets/images/sa_marker.png');
+
     _setCustomMarkers(); // 마커 세팅
     _setGoodwillMarkers();
     _setHmMarkers();
+    _setarketMarkers();
+    _setSAMarkers();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -212,6 +271,49 @@ class _OfflineLocationState extends State<OfflineLocation> {
         position: position,
         infoWindow: InfoWindow(title: id),
         icon: _hmIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.addAll(customMarkers);
+    });
+  }
+
+  //Set arket Marker
+  void _setarketMarkers() {
+    if (_hmIcon == null) return;
+
+    final customMarkers = akMarkerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('hm_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _arketIcon!,
+        onTap: () => _zoomToLocation(position),
+      );
+    }).toSet();
+
+    setState(() {
+      _markers.addAll(customMarkers);
+    });
+  }
+
+  void _setSAMarkers() {
+    if (_saIcon == null) return;
+
+    final customMarkers = saMarkerData.map((data) {
+      final id = data['id'] as String;
+      final position = data['position'] as LatLng;
+
+      return Marker(
+        markerId: MarkerId('sa_$id'),
+        position: position,
+        infoWindow: InfoWindow(title: id),
+        icon: _saIcon!,
         onTap: () => _zoomToLocation(position),
       );
     }).toSet();
@@ -319,6 +421,28 @@ class _OfflineLocationState extends State<OfflineLocation> {
                     color: const Color(0xffCD2523),
                     onPressed: () => _showHMmarkers(),
                     screenWidth: screenWidth * 0.7,
+                    screenHeight: screenHeight,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  _buildStoreButton(
+                    icon: Icons.storefront_outlined,
+                    label: 'Arket',
+                    color: Colors.white,
+                    onPressed: () => _showArkeTmarkers(),
+                    screenWidth: screenWidth * 0.7,
+                    screenHeight: screenHeight,
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  _buildStoreButton(
+                    icon: Icons.storefront_outlined,
+                    label: 'The Salvation Army',
+                    color: const Color(0xffF16767),
+                    onPressed: () => _showSAmarkers(),
+                    screenWidth: screenWidth * 1.2,
                     screenHeight: screenHeight,
                   ),
                   const SizedBox(
