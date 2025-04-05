@@ -85,4 +85,6 @@ lib
 | Step                  | Description                                                                    | Image |
 |-----------------------|--------------------------------------------------------------------------------|--------|
 | **Init View**          | The initial view showing the basic map screen.                                 | <img src="https://i.imgur.com/78Kb6wX.png" height="200"> |
-| **Filtering Map Label** | Allows users to filter map labels to view specific types of information.       | <img src="https://i.imgur.com/77WIAHi.png" height="200"><img src="https://i.imgur.com/mOn0pmk.png" height="200"><img src
+| **Filtering Map Label** | Allows users to filter map labels to view specific types of information.       | <img src="https://i.imgur.com/77WIAHi.png" height="200"><img src="https://i.imgur.com/mOn0pmk.png" height="200"><img src="https://i.imgur.com/1P1VvnL.png" height="200"><img src="https://i.imgur.com/FgVT7GW.png" height="200"><img src="https://i.imgur.com/zkrYFbe.png" height="200"> |
+
+</details>
