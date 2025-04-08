@@ -52,6 +52,14 @@ class _OfflineLocationState extends State<OfflineLocation> {
       _markers.clear();
       _markers.addAll(customMarkers);
     });
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: _currentPosition,
+          zoom: 11,
+        ),
+      ),
+    );
   }
 
   void _showGWmarkers() {
@@ -96,6 +104,14 @@ class _OfflineLocationState extends State<OfflineLocation> {
       _markers.clear();
       _markers.addAll(customMarkers);
     });
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: _currentPosition,
+          zoom: 11,
+        ),
+      ),
+    );
   }
 
   void _showArkeTmarkers() {
@@ -118,6 +134,14 @@ class _OfflineLocationState extends State<OfflineLocation> {
       _markers.clear();
       _markers.addAll(customMarkers);
     });
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: _currentPosition,
+          zoom: 11,
+        ),
+      ),
+    );
   }
 
   void _showSAmarkers() {
@@ -140,6 +164,14 @@ class _OfflineLocationState extends State<OfflineLocation> {
       _markers.clear();
       _markers.addAll(customMarkers);
     });
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: _currentPosition,
+          zoom: 11,
+        ),
+      ),
+    );
   }
 
   void _showAllMarkers() {
