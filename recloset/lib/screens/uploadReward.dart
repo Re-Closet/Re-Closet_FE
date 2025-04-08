@@ -1,13 +1,11 @@
 // reward_detail.dart
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:recloset/screens/reward.dart';
 import 'package:recloset/widgets/basic_lg_button.dart';
-import '../models/reward.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:image_picker/image_picker.dart';
+import '../widgets/buildphoto.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:io';
-import 'package:dotted_border/dotted_border.dart';
-import 'package:recloset/screens/home.dart';
 
 class Uploadreward extends StatefulWidget {
   const Uploadreward({super.key});
@@ -19,21 +17,7 @@ class Uploadreward extends StatefulWidget {
 class _UploadrewardState extends State<Uploadreward> {
   List<bool> isSelected = [true, false];
   String? selectedSite;
-
-  //이미지 업로드
-  XFile? _image;
-  final ImagePicker picker = ImagePicker();
-
-  //이미지를 가져오는 함수
-  Future getImage(ImageSource imageSource) async {
-    //pickedFile에 ImagePicker로 가져온 이미지가 담긴다.
-    final XFile? pickedFile = await picker.pickImage(source: imageSource);
-    if (pickedFile != null) {
-      setState(() {
-        _image = XFile(pickedFile.path); //가져온 이미지를 _image에 저장
-      });
-    }
-  }
+  File? uploadedImage;
 
   List<String> get selectedSiteList =>
       isSelected[0] ? onlinedonationSiteList : offlinedonationSiteList;
@@ -57,6 +41,34 @@ class _UploadrewardState extends State<Uploadreward> {
     'online',
     'offline',
   ];
+
+  //submit button 예외 처리
+  void _handleButtonPressed(BuildContext context) {
+    if (selectedSite != null && uploadedImage != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => RewardScreen()),
+      );
+    } else if (uploadedImage == null) {
+      Fluttertoast.showToast(
+        msg: "Please upload an image.",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else if (selectedSite == null) {
+      Fluttertoast.showToast(
+          msg: "Please select a donation site.",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +240,13 @@ class _UploadrewardState extends State<Uploadreward> {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildPhotoArea(),
+              BuildPhoto(
+                onImageSelected: (File? image) {
+                  setState(() {
+                    uploadedImage = image;
+                  });
+                },
+              ),
               SizedBox(height: screenHeight * 0.03492),
               BasicLgButton(
                 textColor: Colors.white,
@@ -242,94 +260,6 @@ class _UploadrewardState extends State<Uploadreward> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildPhotoArea() {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
-    return _image != null
-        ? GestureDetector(
-            onTap: () => getImage(ImageSource.gallery),
-            child: Container(
-              width: screenWidth - screenWidth * 0.1222,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(21),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 4,
-                    offset: const Offset(2, 2), // changes position of shadow
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(21),
-                child: Image.file(
-                  File(_image!.path),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          )
-        : GestureDetector(
-            onTap: () => getImage(ImageSource.gallery),
-            child: DottedBorder(
-              borderType: BorderType.RRect,
-              dashPattern: const [8, 4],
-              strokeWidth: 2,
-              radius: const Radius.circular(21),
-              color: const Color(0xff7067FF),
-              child: SizedBox(
-                width: screenWidth * 0.8888,
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.ios_share_rounded,
-                        size: 50,
-                        color: Color(0xff746BFF),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text(
-                        'Upload your files here',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xff6D747D),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      const Text(
-                        'Browse',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xff6C63FF),
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        height: 1,
-                        width: screenWidth * 0.128,
-                        color: const Color(0xff746BFF),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-  }
-
-  void _handleButtonPressed(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
     );
   }
 }
