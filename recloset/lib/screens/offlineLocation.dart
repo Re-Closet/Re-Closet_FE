@@ -485,90 +485,91 @@ class _OfflineLocationState extends State<OfflineLocation> {
             ),
           ),
 
-          Positioned(
-            bottom: screenHeight * 0.0264,
-            right: screenWidth * 0.02777,
-            child: Container(
-              width: screenWidth * 0.9,
-              height: screenHeight * 0.35273573923,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    offset: const Offset(2, 2),
-                    blurRadius: 4,
-                  )
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '아름다운 가게 영등포점',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.02328288707,
-                    ),
-                    const Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          color: Color(0xff6C63FF),
-                          size: 30,
-                        ),
-                        Text(
-                          '1.2km',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.01328288707,
-                    ),
-                    Container(
-                      width: screenWidth * 0.32222222222,
-                      height: screenHeight * 0.04074505238,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          width: 1,
-                          color: const Color(0xffE6E6E6),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Image.asset(
-                            'assets/images/nav_logo.png',
-                            width: screenWidth * 0.04666666666,
-                          ),
-                          const Text(
-                            'Direction',
-                            style: TextStyle(
-                              color: Color(0xff6C63FF),
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          // Positioned(
+          //   bottom: screenHeight * 0.0264,
+          //   right: screenWidth * 0.02777,
+          //   child: Container(
+          //     width: screenWidth * 0.9,
+          //     height: screenHeight * 0.35273573923,
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(15),
+          //       color: Colors.white,
+          //       boxShadow: [
+          //         BoxShadow(
+          //           color: Colors.grey.withOpacity(0.5),
+          //           offset: const Offset(2, 2),
+          //           blurRadius: 4,
+          //         )
+          //       ],
+          //     ),
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(20.0),
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           const Text(
+          //             '아름다운 가게 영등포점',
+          //             style: TextStyle(
+          //               fontSize: 18,
+          //               fontWeight: FontWeight.bold,
+          //             ),
+          //           ),
+          //           SizedBox(
+          //             height: screenHeight * 0.02328288707,
+          //           ),
+          //           const Row(
+          //             children: [
+          //               Icon(
+          //                 Icons.location_on,
+          //                 color: Color(0xff6C63FF),
+          //                 size: 30,
+          //               ),
+          //               Text(
+          //                 '1.2km',
+          //                 style: TextStyle(
+          //                   fontSize: 18,
+          //                   fontWeight: FontWeight.bold,
+          //                   color: Colors.grey,
+          //                 ),
+          //               )
+          //             ],
+          //           ),
+          //           SizedBox(
+          //             height: screenHeight * 0.01328288707,
+          //           ),
+          //           Container(
+          //             width: screenWidth * 0.32222222222,
+          //             height: screenHeight * 0.04074505238,
+          //             decoration: BoxDecoration(
+          //               borderRadius: BorderRadius.circular(15),
+          //               border: Border.all(
+          //                 width: 1,
+          //                 color: const Color(0xffE6E6E6),
+          //               ),
+          //             ),
+          //             child: Row(
+          //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //               children: [
+          //                 Image.asset(
+          //                   'assets/images/nav_logo.png',
+          //                   width: screenWidth * 0.04666666666,
+          //                 ),
+          //                 const Text(
+          //                   'Direction',
+          //                   style: TextStyle(
+          //                     color: Color(0xff6C63FF),
+          //                     fontSize: 16,
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
           // 현재 내 위치로 이동
           Positioned(
             bottom: screenHeight * 0.1164,

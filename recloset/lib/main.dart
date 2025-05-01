@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.outfitTextTheme(),
       ),
       home: const IntroScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

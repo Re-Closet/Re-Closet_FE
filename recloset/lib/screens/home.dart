@@ -94,12 +94,12 @@ class _HomeScreen extends State<HomeScreen> {
                             ),
                             child: Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: Row(
                                 children: [
                                   Image.asset(
-                                    'assets/images/face.png',
-                                    width: screenWidth * 0.22975,
+                                    'assets/images/profile.png',
+                                    width: screenWidth * 0.18975,
                                   ),
                                   const SizedBox(width: 15),
                                   const Column(
