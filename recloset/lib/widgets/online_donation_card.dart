@@ -7,7 +7,6 @@ class DonationCard extends StatefulWidget {
   final String frontImagePath;
   final String backImagePath;
   final double cardWidth;
-  final double cardHeight;
   final double imageWidth;
   final double imageHeight;
   final String donationName;
@@ -19,7 +18,6 @@ class DonationCard extends StatefulWidget {
     required this.frontImagePath,
     required this.backImagePath,
     required this.cardWidth,
-    required this.cardHeight,
     required this.imageWidth,
     required this.imageHeight,
     required this.donationName,
@@ -33,9 +31,26 @@ class DonationCard extends StatefulWidget {
 class _DonationCardState extends State<DonationCard> {
   bool _isPressed = false;
 
-// URL 열기 함수
+  // 스타일, 색상, 비율 상수화
+  static const double _donationNameFontSize = 14;
+  static const double _goButtonFontSize = 20;
+  static const Color _goButtonColor = Color(0xff6C63FF);
+  static const Color _shadowColor = Color.fromARGB(255, 206, 202, 255);
+
+  static const EdgeInsets _donationNamePadding = EdgeInsets.all(10.0);
+
+  static const double _goButtonWidthRatio = 0.8573;
+  static const double _goButtonHeightRatio = 0.2334;
+  static const double _spacingRatio = 0.4239;
+
+  final BoxShadow _cardShadow = const BoxShadow(
+    color: _shadowColor,
+    blurRadius: 12,
+    offset: Offset(4, 4),
+  );
+
   void _launchURL() async {
-    final Uri uri = Uri.parse(widget.url); // 외부에서 받은 url 사용
+    final Uri uri = Uri.parse(widget.url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw 'Could not launch ${widget.url}';
     }
@@ -44,111 +59,86 @@ class _DonationCardState extends State<DonationCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: (_) {
-        setState(() {
-          _isPressed = true;
-        });
-      },
+      onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) {
-        setState(() {
-          _isPressed = false;
-        });
-        widget.controller.flipcard(); // 카드 뒤집기
+        setState(() => _isPressed = false);
+        widget.controller.flipcard();
       },
-      onTapCancel: () {
-        setState(() {
-          _isPressed = false;
-        });
-      },
+      onTapCancel: () => setState(() => _isPressed = false),
       child: SizedBox(
         width: widget.cardWidth,
-        height: widget.cardHeight,
         child: FlipCard(
           rotateSide: RotateSide.left,
           onTapFlipping: false,
           axis: FlipAxis.horizontal,
           controller: widget.controller,
-
-          //전면
-          frontWidget: Center(
-            child: Container(
-              height: widget.cardHeight,
-              width: widget.cardWidth,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromARGB(255, 206, 202, 255)
-                        .withOpacity(0.5),
-                    blurRadius: 12,
-                    offset: const Offset(4, 4),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: Image.asset(
-                  widget.frontImagePath,
-                  width: widget.imageWidth,
-                  height: widget.imageHeight,
-                ),
-              ),
-            ),
-          ),
-
-          //후면
-          backWidget: Container(
-            height: widget.cardHeight,
-            width: widget.cardWidth,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(32),
-            ),
-            child: Center(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      widget.donationName,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: widget.cardHeight * 0.4239,
-                  ),
-                  GestureDetector(
-                    onTap: _launchURL,
-                    child: Stack(
-                      alignment: Alignment.center, // 전체 Stack에서 중앙 정렬 적용
-                      children: [
-                        Container(
-                          width: widget.cardWidth * 0.8573,
-                          height: widget.cardHeight * 0.2334,
-                          decoration: BoxDecoration(
-                            color: const Color(0xff6C63FF),
-                            borderRadius: BorderRadius.circular(32),
-                          ),
-                        ),
-                        const Text(
-                          'Go',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          frontWidget: _buildFront(),
+          backWidget: _buildBack(),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFront() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+      width: widget.cardWidth,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [_cardShadow],
+      ),
+      child: Center(
+        child: Image.asset(
+          widget.frontImagePath,
+          width: widget.imageWidth,
+          height: widget.imageHeight,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBack() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: _donationNamePadding,
+            child: Text(
+              widget.donationName,
+              style: const TextStyle(
+                fontSize: _donationNameFontSize,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          GestureDetector(
+              onTap: _launchURL,
+              child: Container(
+                width: widget.cardWidth * _goButtonWidthRatio,
+                decoration: BoxDecoration(
+                  color: _goButtonColor,
+                  borderRadius: BorderRadius.circular(32),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: const Center(
+                  child: Text(
+                    'Go',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )),
+        ],
       ),
     );
   }

@@ -1,13 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:camera/camera.dart';
+
 import 'package:recloset/custom_icon_icons.dart';
 import 'package:recloset/screens/ai_result.dart';
 import 'package:recloset/screens/home.dart';
 
-import '../widgets/bottom_navigation.dart';
-import 'package:camera/camera.dart';
-
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({super.key});
+  final String accessToken;
+  const CameraScreen({super.key, required this.accessToken});
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -15,23 +20,18 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen>
     with SingleTickerProviderStateMixin {
-  //toggle button
   bool isTopSelected = true;
   late AnimationController _toggleController;
   late Animation<double> _animation;
+  bool _isAnalyzing = false;
 
-  //Camera Controller
   List<CameraDescription> cameras = [];
   CameraController? cameraController;
 
   @override
   void initState() {
     super.initState();
-
-    //Camera Controller
     _setupCameraController();
-
-    //toggle button
     _toggleController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -42,29 +42,93 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void dispose() {
-    //Camera Controller
     cameraController?.dispose();
-
-    //toggle button
     _toggleController.dispose();
     super.dispose();
   }
 
   Future<void> _setupCameraController() async {
-    List<CameraDescription> cameraList = await availableCameras();
-    if (cameraList.isNotEmpty) {
-      cameraController = CameraController(
-        cameraList.first,
-        ResolutionPreset.high,
+    try {
+      List<CameraDescription> cameraList = await availableCameras();
+      final backCamera = cameraList.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back,
+        orElse: () => cameraList.first,
       );
+
+      cameraController = CameraController(
+        backCamera,
+        ResolutionPreset.high,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+        enableAudio: false,
+      );
+
       await cameraController!.initialize();
-      setState(() {
-        cameras = cameraList;
-      });
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (mounted) setState(() {});
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('카메라 오류'),
+          content: Text('카메라 초기화 실패: $e'),
+        ),
+      );
     }
   }
 
-// Toggle 위젯
+  Future<void> analyzeImage(File imageFile) async {
+    setState(() {
+      _isAnalyzing = true;
+    });
+
+    try {
+      final uri = Uri.parse(
+          'https://recloset-114997745103.asia-northeast3.run.app/api/image/analyze');
+
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer ${widget.accessToken}'
+        ..files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
+        final data = jsonResponse['data'];
+        final responseData = data['response_data'] ?? {};
+
+        if (!mounted) return;
+        final rawConfidence = data['confidence'];
+        final confidence =
+            (rawConfidence is num) ? rawConfidence.toDouble() : 0.0;
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AiResult(
+              response: responseData['response'] ?? '',
+              solution: responseData['solution'] ?? '',
+              confidence: confidence,
+              prediction: data['prediction'] ?? '',
+              resultType: data['resultType'] ?? false,
+            ),
+          ),
+        );
+      } else {
+        print('이미지 분석 실패, 상태 코드: ${response.statusCode}');
+        print('서버 응답: ${response.body}');
+      }
+    } catch (e) {
+      print('분석 중 오류 발생: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+        });
+      }
+    }
+  }
+
   Widget _buildToggleButton(double screenWidth) {
     double toggleWidth = screenWidth * 0.475;
     double toggleHeight = screenWidth * 0.13125;
@@ -98,12 +162,6 @@ class _CameraScreenState extends State<CameraScreen>
                 decoration: BoxDecoration(
                   color: const Color(0xff8982fe),
                   borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                        offset: const Offset(0, 2),
-                        blurRadius: 2,
-                        color: Colors.black.withOpacity(0.25)),
-                  ],
                 ),
               ),
             ),
@@ -119,7 +177,7 @@ class _CameraScreenState extends State<CameraScreen>
                     },
                     child: Center(
                       child: Icon(
-                        CustomIcon.fluent_mdl2_shirt, // 티셔츠 아이콘
+                        CustomIcon.fluent_mdl2_shirt,
                         color: isTopSelected
                             ? Colors.white
                             : const Color(0xff8982fe).withOpacity(0.5),
@@ -137,7 +195,7 @@ class _CameraScreenState extends State<CameraScreen>
                     },
                     child: Center(
                       child: Icon(
-                        CustomIcon.iconoir_pants, // 바지 아이콘
+                        CustomIcon.iconoir_pants,
                         color: isTopSelected
                             ? const Color(0xff8982fe).withOpacity(0.5)
                             : Colors.white,
@@ -155,7 +213,6 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildUI() {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     final buttonDiameter = screenWidth * 0.209375;
     final buttonInnerDiameter = screenWidth * 0.165625;
@@ -166,19 +223,22 @@ class _CameraScreenState extends State<CameraScreen>
 
     if (cameraController == null ||
         cameraController?.value.isInitialized == false) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
+
     return SafeArea(
       child: SizedBox.expand(
         child: Stack(
           children: [
-            CameraPreview(
-              cameraController!,
-            ),
+            CameraPreview(cameraController!),
 
-            //overlay
+            if (_isAnalyzing)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+
+            // Overlay
             Positioned(
               top: 0,
               bottom: barHeight + sbarHeight,
@@ -188,14 +248,13 @@ class _CameraScreenState extends State<CameraScreen>
                 isTopSelected
                     ? 'assets/images/tshirt_overlay.png'
                     : 'assets/images/pants_overlay.png',
-                width: screenWidth,
-                fit: BoxFit.cover, // 화면에 꽉 차게, 남는 부분은 잘림
-                alignment: Alignment.center, // 중앙 정렬
+                fit: BoxFit.cover,
               ),
             ),
 
+            // 안내 문구
             Positioned(
-              top: mbarHeight + 20,
+              top: mbarHeight + 10,
               left: 0,
               right: 0,
               child: const Text(
@@ -203,18 +262,18 @@ class _CameraScreenState extends State<CameraScreen>
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 16,
                 ),
               ),
             ),
 
-            //top bar >> mbarHeight
+            // 상단 바
             Positioned(
               top: 0,
               child: Container(
                 width: screenWidth,
                 height: mbarHeight,
-                decoration: const BoxDecoration(color: Color(0xffF4ECFE)),
+                decoration: const BoxDecoration(color: Colors.white),
                 child: Row(
                   children: [
                     Padding(
@@ -229,7 +288,10 @@ class _CameraScreenState extends State<CameraScreen>
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const HomeScreen()),
+                              builder: (context) => HomeScreen(
+                                accessToken: widget.accessToken,
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -239,7 +301,7 @@ class _CameraScreenState extends State<CameraScreen>
               ),
             ),
 
-            // Toggle Button
+            // Toggle 버튼
             Positioned(
               bottom: barHeight + sbarHeight + 20,
               left: 0,
@@ -247,39 +309,38 @@ class _CameraScreenState extends State<CameraScreen>
               child: _buildToggleButton(screenWidth),
             ),
 
-            //sbar
+            // 구분 바
             Positioned(
               bottom: barHeight,
               child: Container(
                 width: screenWidth,
                 height: sbarHeight,
-                decoration: const BoxDecoration(color: Color(0xff8982FE)),
+                color: const Color(0xff8982FE),
               ),
             ),
 
-            //bottom Container
+            // 하단 영역
             Positioned(
               left: 0,
               bottom: 0,
               child: Container(
                 height: barHeight,
-                width: MediaQuery.of(context).size.width,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                ),
+                width: screenWidth,
+                color: Colors.white,
               ),
             ),
 
-            //botton button layout - gradient
+            // 카메라 촬영 버튼
             Positioned(
               left: screenWidth / 2 - buttonDiameter / 2,
               bottom: barHeight / 2 - buttonDiameter / 2,
               child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AiResult()),
-                  );
+                onTap: () async {
+                  if (cameraController == null ||
+                      !cameraController!.value.isInitialized) return;
+
+                  final XFile image = await cameraController!.takePicture();
+                  await analyzeImage(File(image.path));
                 },
                 child: Container(
                   width: buttonDiameter,
@@ -318,7 +379,36 @@ class _CameraScreenState extends State<CameraScreen>
                   ),
                 ),
               ),
-            )
+            ),
+
+            // 갤러리 버튼
+            Positioned(
+              left: 50,
+              bottom: barHeight / 2 - 20,
+              child: GestureDetector(
+                onTap: () async {
+                  final ImagePicker picker = ImagePicker();
+                  final XFile? image =
+                      await picker.pickImage(source: ImageSource.gallery);
+                  if (image != null) {
+                    await analyzeImage(File(image.path));
+                  }
+                },
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xff8982FE),
+                  ),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -328,6 +418,7 @@ class _CameraScreenState extends State<CameraScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _buildUI(),
     );
   }

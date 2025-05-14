@@ -6,9 +6,12 @@ import 'package:recloset/screens/offlineLocation.dart';
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
 
+  final String accessToken;
+
   const CustomBottomNavigationBar({
     super.key,
     required this.currentIndex,
+    required this.accessToken,
   });
 
   void _onTabSelected(BuildContext context, int index) {
@@ -17,16 +20,16 @@ class CustomBottomNavigationBar extends StatelessWidget {
     Widget destination;
     switch (index) {
       case 0:
-        destination = const HomeScreen();
+        destination = HomeScreen(accessToken: accessToken);
         break;
       case 1:
-        destination = const CameraScreen();
+        destination = CameraScreen(accessToken: accessToken);
         break;
       case 2:
-        destination = const OfflineLocation();
+        destination = OfflineLocation(accessToken: accessToken);
         break;
       default:
-        destination = const HomeScreen();
+        destination = HomeScreen(accessToken: accessToken);
     }
 
     Navigator.pushReplacement(
@@ -44,9 +47,10 @@ class CustomBottomNavigationBar extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return SafeArea(
+      bottom: false,
       top: false,
       child: Container(
-        height: screenHeight * 0.10942,
+        padding: const EdgeInsets.only(top: 10),
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10),

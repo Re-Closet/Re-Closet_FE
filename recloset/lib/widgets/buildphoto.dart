@@ -76,7 +76,7 @@ class _BuildPhotoState extends State<BuildPhoto> {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        'Upload your files here',
+                        'Upload your donation receipt here',
                         style: TextStyle(
                           fontSize: 16,
                           color: Color(0xff6D747D),

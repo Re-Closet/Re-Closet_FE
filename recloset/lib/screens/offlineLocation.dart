@@ -1,12 +1,13 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import '../widgets/bottom_navigation.dart';
 import '../data/markerdata.dart';
-import 'dart:ui' as ui;
 
 class OfflineLocation extends StatefulWidget {
-  const OfflineLocation({super.key});
+  final String accessToken;
+  const OfflineLocation({super.key, required this.accessToken});
 
   @override
   State<OfflineLocation> createState() => _OfflineLocationState();
@@ -14,16 +15,11 @@ class OfflineLocation extends StatefulWidget {
 
 class _OfflineLocationState extends State<OfflineLocation> {
   GoogleMapController? _mapController;
-  LatLng _currentPosition = const LatLng(37.5665, 126.9780); // 기본값: 서울 시청
-  bool _isLocationLoaded = false;
-  final Set<Marker> _markers = {}; // 마커 모음
-
-  //icon init
-  BitmapDescriptor? _customIcon; // 커스텀 마커 아이콘
-  BitmapDescriptor? _goodwillIcon;
-  BitmapDescriptor? _hmIcon;
-  BitmapDescriptor? _arketIcon;
-  BitmapDescriptor? _saIcon;
+  LatLng _currentPosition = const LatLng(37.5665, 126.9780);
+  Set<Marker> _markers = {};
+  BitmapDescriptor? _customIcon, _goodwillIcon, _hmIcon, _arketIcon, _saIcon;
+  StoreMarker? _selectedMarker;
+  bool _isMarkersLoaded = false;
 
   @override
   void initState() {
@@ -31,205 +27,48 @@ class _OfflineLocationState extends State<OfflineLocation> {
     _initMarkerData();
   }
 
-//show markers 함수
-  void _showBSmarkers() {
-    if (_customIcon == null) return;
-
-    final customMarkers = markerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('custom_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _customIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
-    setState(() {
-      _markers.clear();
-      _markers.addAll(customMarkers);
-    });
-    _mapController?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: _currentPosition,
-          zoom: 11,
-        ),
-      ),
-    );
-  }
-
-  void _showGWmarkers() {
-    if (_goodwillIcon == null) return;
-
-    final customMarkers = goodwillMarkerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('goodwill_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _goodwillIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
-    setState(() {
-      _markers.clear();
-      _markers.addAll(customMarkers);
-    });
-  }
-
-  void _showHMmarkers() {
-    if (_hmIcon == null) return;
-
-    final customMarkers = hmMarkerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('hm_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _hmIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
-    setState(() {
-      _markers.clear();
-      _markers.addAll(customMarkers);
-    });
-    _mapController?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: _currentPosition,
-          zoom: 11,
-        ),
-      ),
-    );
-  }
-
-  void _showArkeTmarkers() {
-    if (_arketIcon == null) return;
-
-    final customMarkers = akMarkerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('arket_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _arketIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
-    setState(() {
-      _markers.clear();
-      _markers.addAll(customMarkers);
-    });
-    _mapController?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: _currentPosition,
-          zoom: 11,
-        ),
-      ),
-    );
-  }
-
-  void _showSAmarkers() {
-    if (_saIcon == null) return;
-
-    final customMarkers = saMarkerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('sa_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _saIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
-    setState(() {
-      _markers.clear();
-      _markers.addAll(customMarkers);
-    });
-    _mapController?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: _currentPosition,
-          zoom: 11,
-        ),
-      ),
-    );
-  }
-
-  void _showAllMarkers() {
-    _setCustomMarkers();
-    _setGoodwillMarkers();
-    _setHmMarkers();
-    _setarketMarkers();
-    _setSAMarkers();
-  }
-
-  //first Init
   Future<void> _initMarkerData() async {
-    await _getCurrentLocation(); // 위치 먼저
+    await _getCurrentLocation();
 
-    //beautiful store icon
-    _customIcon = await BitmapDescriptor.fromAssetImage(
-      const ImageConfiguration(size: Size(78, 78)),
-      'assets/images/marker.png',
-    );
+    final icons = await Future.wait([
+      BitmapDescriptor.fromAssetImage(
+          const ImageConfiguration(size: Size(20, 20)),
+          'assets/images/marker.png'),
+      BitmapDescriptor.fromAssetImage(
+          const ImageConfiguration(size: Size(40, 40)),
+          'assets/images/goodwillmarker.png'),
+      BitmapDescriptor.fromAssetImage(
+          const ImageConfiguration(size: Size(40, 40)),
+          'assets/images/hm_marker.png'),
+      BitmapDescriptor.fromAssetImage(
+          const ImageConfiguration(size: Size(40, 40)),
+          'assets/images/arket_marker.png'),
+      BitmapDescriptor.fromAssetImage(
+          const ImageConfiguration(size: Size(40, 40)),
+          'assets/images/sa_marker.png'),
+    ]);
 
-    //goodwillIcon
-    _goodwillIcon = await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(78, 78)),
-        'assets/images/goodwillmarker.png');
+    _customIcon = icons[0];
+    _goodwillIcon = icons[1];
+    _hmIcon = icons[2];
+    _arketIcon = icons[3];
+    _saIcon = icons[4];
 
-    //hmIcon
-    _hmIcon = await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(78, 78)),
-        'assets/images/hm_marker.png');
-
-    _arketIcon = await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(78, 78)),
-        'assets/images/arket_marker.png');
-
-    _saIcon = await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(78, 78)),
-        'assets/images/sa_marker.png');
-
-    _setCustomMarkers(); // 마커 세팅
-    _setGoodwillMarkers();
-    _setHmMarkers();
-    _setarketMarkers();
-    _setSAMarkers();
+    _showAllMarkers();
+    setState(() {
+      _isMarkersLoaded = true;
+    });
   }
 
   Future<void> _getCurrentLocation() async {
-    Location location = Location();
-
-    bool serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) return;
+    final location = Location();
+    if (!await location.serviceEnabled()) {
+      if (!await location.requestService()) return;
     }
 
-    PermissionStatus permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) return;
+    if (await location.hasPermission() == PermissionStatus.denied) {
+      if (await location.requestPermission() != PermissionStatus.granted)
+        return;
     }
 
     final locationData = await location.getLocation();
@@ -237,149 +76,86 @@ class _OfflineLocationState extends State<OfflineLocation> {
       setState(() {
         _currentPosition =
             LatLng(locationData.latitude!, locationData.longitude!);
-        _isLocationLoaded = true;
       });
-
-      _mapController?.animateCamera(
-        CameraUpdate.newLatLng(_currentPosition),
-      );
+      _mapController?.animateCamera(CameraUpdate.newLatLng(_currentPosition));
     }
   }
 
-  //Set Beautiful Store Marker
-  void _setCustomMarkers() {
-    if (_customIcon == null) return;
-
-    final customMarkers = markerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
+  Set<Marker> _createMarkers({
+    required List<StoreMarker> stores,
+    required BitmapDescriptor icon,
+    required String prefix,
+  }) {
+    return stores.map((store) {
       return Marker(
-        markerId: MarkerId('custom_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _customIcon!,
-        onTap: () => _zoomToLocation(position),
+        markerId: MarkerId('${prefix}_${store.id}'),
+        position: store.position,
+        infoWindow: InfoWindow(title: store.id),
+        icon: icon,
+        onTap: () {
+          _zoomTo(store.position, 19);
+          setState(() {
+            _selectedMarker = store;
+          });
+        },
       );
     }).toSet();
-
-    setState(() {
-      _markers.addAll(customMarkers);
-    });
   }
 
-  //Set Goodwill Store Marker
-  void _setGoodwillMarkers() {
-    if (_goodwillIcon == null) return;
-
-    final customMarkers = goodwillMarkerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('goodwill_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _goodwillIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
+  void _showMarkers(
+      List<StoreMarker> stores, BitmapDescriptor icon, String prefix) {
     setState(() {
-      _markers.addAll(customMarkers);
+      _markers = _createMarkers(stores: stores, icon: icon, prefix: prefix);
+      _selectedMarker = null;
     });
+    _zoomTo(_currentPosition, 11);
   }
 
-  //Set H&M Marker
-  void _setHmMarkers() {
-    if (_hmIcon == null) return;
-
-    final customMarkers = hmMarkerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('hm_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _hmIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
+  void _showAllMarkers() {
     setState(() {
-      _markers.addAll(customMarkers);
+      _markers.clear();
+      _markers.addAll(_createMarkers(
+          stores: markerData, icon: _customIcon!, prefix: 'custom'));
+      _markers.addAll(_createMarkers(
+          stores: goodwillMarkerData,
+          icon: _goodwillIcon!,
+          prefix: 'goodwill'));
+      _markers.addAll(
+          _createMarkers(stores: hmMarkerData, icon: _hmIcon!, prefix: 'hm'));
+      _markers.addAll(_createMarkers(
+          stores: akMarkerData, icon: _arketIcon!, prefix: 'arket'));
+      _markers.addAll(
+          _createMarkers(stores: saMarkerData, icon: _saIcon!, prefix: 'sa'));
+      _selectedMarker = null;
     });
+    _zoomTo(_currentPosition, 11);
   }
 
-  //Set arket Marker
-  void _setarketMarkers() {
-    if (_hmIcon == null) return;
-
-    final customMarkers = akMarkerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('hm_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _arketIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
-    setState(() {
-      _markers.addAll(customMarkers);
-    });
-  }
-
-  void _setSAMarkers() {
-    if (_saIcon == null) return;
-
-    final customMarkers = saMarkerData.map((data) {
-      final id = data['id'] as String;
-      final position = data['position'] as LatLng;
-
-      return Marker(
-        markerId: MarkerId('sa_$id'),
-        position: position,
-        infoWindow: InfoWindow(title: id),
-        icon: _saIcon!,
-        onTap: () => _zoomToLocation(position),
-      );
-    }).toSet();
-
-    setState(() {
-      _markers.addAll(customMarkers);
-    });
-  }
-
-//marker 클릭 시, zoom: 19
-  void _zoomToLocation(LatLng target) {
+  void _zoomTo(LatLng target, double zoomLevel) {
     _mapController?.animateCamera(
       CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: target,
-          zoom: 19,
-        ),
-      ),
+          CameraPosition(target: target, zoom: zoomLevel)),
     );
   }
 
-  //marker 클릭 시, zoom: 19
-  void _zoomToFirstLocation(LatLng target) {
-    _mapController?.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: target,
-          zoom: 11,
-        ),
-      ),
-    );
+  double _calculateDistance(LatLng start, LatLng end) {
+    const double earthRadius = 6371; // km
+    final double dLat = _degreeToRadian(end.latitude - start.latitude);
+    final double dLng = _degreeToRadian(end.longitude - start.longitude);
+
+    final double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_degreeToRadian(start.latitude)) *
+            cos(_degreeToRadian(end.latitude)) *
+            sin(dLng / 2) *
+            sin(dLng / 2);
+    final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return earthRadius * c;
   }
 
-  //UI 구성
+  double _degreeToRadian(double degree) {
+    return degree * pi / 180;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -389,236 +165,98 @@ class _OfflineLocationState extends State<OfflineLocation> {
       body: Stack(
         children: [
           GoogleMap(
-            initialCameraPosition: CameraPosition(
-              target: _currentPosition,
-              zoom: 11,
-            ),
+            initialCameraPosition:
+                CameraPosition(target: _currentPosition, zoom: 11),
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
-            onMapCreated: (controller) {
-              _mapController = controller;
-              if (_isLocationLoaded) {
-                _mapController!.animateCamera(
-                  CameraUpdate.newLatLng(_currentPosition),
-                );
-              }
-            },
+            mapToolbarEnabled: false,
+            onMapCreated: (controller) => _mapController = controller,
             markers: _markers,
           ),
-          Padding(
-            padding: EdgeInsets.only(top: screenHeight * 0.0814),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  const SizedBox(
-                    width: 30,
-                  ),
-                  _buildStoreButton(
-                    icon: Icons.remove_red_eye_outlined,
-                    label: 'View All',
-                    color: Colors.white,
-                    onPressed: () => _showAllMarkers(),
-                    screenWidth: screenWidth * 0.8,
-                    screenHeight: screenHeight,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  _buildStoreButton(
-                    icon: Icons.storefront_outlined,
-                    label: 'Beautiful Store',
-                    color: const Color(0xff7067FF),
-                    onPressed: () => _showBSmarkers(),
-                    screenWidth: screenWidth,
-                    screenHeight: screenHeight,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  _buildStoreButton(
-                    icon: Icons.storefront_outlined,
-                    label: 'Goodwill store',
-                    color: const Color(0xff34A853),
-                    onPressed: () => _showGWmarkers(),
-                    screenWidth: screenWidth,
-                    screenHeight: screenHeight,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  _buildStoreButton(
-                    icon: Icons.storefront_outlined,
-                    label: 'H&M',
-                    color: const Color(0xffCD2523),
-                    onPressed: () => _showHMmarkers(),
-                    screenWidth: screenWidth * 0.7,
-                    screenHeight: screenHeight,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  _buildStoreButton(
-                    icon: Icons.storefront_outlined,
-                    label: 'Arket',
-                    color: Colors.white,
-                    onPressed: () => _showArkeTmarkers(),
-                    screenWidth: screenWidth * 0.7,
-                    screenHeight: screenHeight,
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  _buildStoreButton(
-                    icon: Icons.storefront_outlined,
-                    label: 'The Salvation Army',
-                    color: const Color(0xffF16767),
-                    onPressed: () => _showSAmarkers(),
-                    screenWidth: screenWidth * 1.2,
-                    screenHeight: screenHeight,
-                  ),
-                  const SizedBox(
-                    width: 30,
-                  ),
-                ],
+          if (!_isMarkersLoaded)
+            Container(
+              color: Colors.white.withOpacity(0.7), // 배경 흐림 처리 (선택)
+              child: const Center(
+                child: CircularProgressIndicator(),
               ),
             ),
-          ),
-
-          // Positioned(
-          //   bottom: screenHeight * 0.0264,
-          //   right: screenWidth * 0.02777,
-          //   child: Container(
-          //     width: screenWidth * 0.9,
-          //     height: screenHeight * 0.35273573923,
-          //     decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.circular(15),
-          //       color: Colors.white,
-          //       boxShadow: [
-          //         BoxShadow(
-          //           color: Colors.grey.withOpacity(0.5),
-          //           offset: const Offset(2, 2),
-          //           blurRadius: 4,
-          //         )
-          //       ],
-          //     ),
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(20.0),
-          //       child: Column(
-          //         crossAxisAlignment: CrossAxisAlignment.start,
-          //         children: [
-          //           const Text(
-          //             '아름다운 가게 영등포점',
-          //             style: TextStyle(
-          //               fontSize: 18,
-          //               fontWeight: FontWeight.bold,
-          //             ),
-          //           ),
-          //           SizedBox(
-          //             height: screenHeight * 0.02328288707,
-          //           ),
-          //           const Row(
-          //             children: [
-          //               Icon(
-          //                 Icons.location_on,
-          //                 color: Color(0xff6C63FF),
-          //                 size: 30,
-          //               ),
-          //               Text(
-          //                 '1.2km',
-          //                 style: TextStyle(
-          //                   fontSize: 18,
-          //                   fontWeight: FontWeight.bold,
-          //                   color: Colors.grey,
-          //                 ),
-          //               )
-          //             ],
-          //           ),
-          //           SizedBox(
-          //             height: screenHeight * 0.01328288707,
-          //           ),
-          //           Container(
-          //             width: screenWidth * 0.32222222222,
-          //             height: screenHeight * 0.04074505238,
-          //             decoration: BoxDecoration(
-          //               borderRadius: BorderRadius.circular(15),
-          //               border: Border.all(
-          //                 width: 1,
-          //                 color: const Color(0xffE6E6E6),
-          //               ),
-          //             ),
-          //             child: Row(
-          //               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //               children: [
-          //                 Image.asset(
-          //                   'assets/images/nav_logo.png',
-          //                   width: screenWidth * 0.04666666666,
-          //                 ),
-          //                 const Text(
-          //                   'Direction',
-          //                   style: TextStyle(
-          //                     color: Color(0xff6C63FF),
-          //                     fontSize: 16,
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
-          // 현재 내 위치로 이동
-          Positioned(
-            bottom: screenHeight * 0.1164,
-            right: screenWidth * 0.02777,
-            child: FloatingActionButton(
-              onPressed: () {
-                _zoomToLocation(_currentPosition);
-              },
-              child: const Icon(Icons.pin_drop),
-            ),
-          ),
-
-          //초기 위치로 이동
-          Positioned(
-            bottom: screenHeight * 0.1864,
-            right: screenWidth * 0.02777,
-            child: FloatingActionButton(
-              onPressed: () {
-                _zoomToFirstLocation(_currentPosition);
-              },
-              child: const Icon(Icons.pin_drop_outlined),
-            ),
-          ),
+          _buildStoreButtons(screenHeight, screenWidth),
+          if (_selectedMarker != null)
+            _buildInfoCard(screenHeight, screenWidth, _selectedMarker!),
         ],
       ),
-      bottomNavigationBar: const CustomBottomNavigationBar(currentIndex: 2),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: 2,
+        accessToken: widget.accessToken,
+      ),
     );
   }
 
-  Widget _buildStoreButton({
-    required String label,
-    required Color color,
-    required VoidCallback onPressed,
-    required double screenWidth,
-    required double screenHeight,
-    required IconData icon,
-  }) {
+  Widget _buildStoreButtons(double screenHeight, double screenWidth) {
+    return Padding(
+      padding: EdgeInsets.only(top: screenHeight * 0.0814),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            const SizedBox(width: 30),
+            _buildStoreButton('View All', Colors.white, _showAllMarkers,
+                screenWidth * 0.8, screenHeight, Icons.remove_red_eye_outlined),
+            _buildStoreButton(
+                'Beautiful Store',
+                const Color(0xff7067FF),
+                () => _showMarkers(markerData, _customIcon!, 'custom'),
+                screenWidth,
+                screenHeight,
+                Icons.storefront_outlined),
+            _buildStoreButton(
+                'Goodwill store',
+                const Color(0xff34A853),
+                () => _showMarkers(
+                    goodwillMarkerData, _goodwillIcon!, 'goodwill'),
+                screenWidth,
+                screenHeight,
+                Icons.storefront_outlined),
+            _buildStoreButton(
+                'H&M',
+                const Color(0xffCD2523),
+                () => _showMarkers(hmMarkerData, _hmIcon!, 'hm'),
+                screenWidth * 0.7,
+                screenHeight,
+                Icons.storefront_outlined),
+            _buildStoreButton(
+                'Arket',
+                Colors.white,
+                () => _showMarkers(akMarkerData, _arketIcon!, 'arket'),
+                screenWidth * 0.7,
+                screenHeight,
+                Icons.storefront_outlined),
+            _buildStoreButton(
+                'The Salvation Army',
+                const Color(0xffF16767),
+                () => _showMarkers(saMarkerData, _saIcon!, 'sa'),
+                screenWidth * 1.2,
+                screenHeight,
+                Icons.storefront_outlined),
+            const SizedBox(width: 30),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStoreButton(String label, Color color, VoidCallback onPressed,
+      double width, double height, IconData icon) {
     return SizedBox(
-      width: screenWidth * 0.42,
-      height: screenHeight * 0.044111,
+      height: height * 0.044111,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           foregroundColor:
               color == Colors.white ? const Color(0xff303030) : Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           elevation: 5,
         ),
         child: Row(
@@ -628,6 +266,73 @@ class _OfflineLocationState extends State<OfflineLocation> {
             const SizedBox(width: 8),
             Text(label),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(
+      double screenHeight, double screenWidth, StoreMarker marker) {
+    final double distance =
+        _calculateDistance(_currentPosition, marker.position);
+
+    return Positioned(
+      bottom: screenHeight * 0.0264,
+      right: 0,
+      left: 0,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                offset: const Offset(2, 2),
+                blurRadius: 4)
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(marker.id,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: screenHeight * 0.0233),
+              Row(
+                children: [
+                  const Icon(Icons.location_on,
+                      color: Color(0xff6C63FF), size: 30),
+                  Text('${distance.toStringAsFixed(1)} km',
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey)),
+                ],
+              ),
+              SizedBox(height: screenHeight * 0.0133),
+              Container(
+                width: screenWidth * 0.3222,
+                height: screenHeight * 0.0407,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(width: 1, color: const Color(0xffE6E6E6)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Image.asset('assets/images/nav_logo.png',
+                        width: screenWidth * 0.0467),
+                    const Text('Direction',
+                        style:
+                            TextStyle(color: Color(0xff6C63FF), fontSize: 16)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

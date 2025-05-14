@@ -3,11 +3,25 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+
 import '../widgets/radial_gauge.dart';
 import '../widgets/donationTile.dart';
 
 class AiResult extends StatefulWidget {
-  const AiResult({super.key});
+  final String response;
+  final String solution;
+  final double confidence;
+  final String prediction;
+  final bool resultType;
+
+  const AiResult({
+    super.key,
+    required this.response,
+    required this.solution,
+    required this.confidence,
+    required this.prediction,
+    required this.resultType,
+  });
 
   @override
   State<AiResult> createState() => _AiResultState();
@@ -17,6 +31,9 @@ class _AiResultState extends State<AiResult> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xffC0BCFF),
+      ),
       backgroundColor: Colors.white,
       body: _buildUI(),
     );
@@ -24,128 +41,172 @@ class _AiResultState extends State<AiResult> {
 
   Widget _buildUI() {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     final tipContainerWidth = screenWidth * 0.903125;
     final tipContainerHeight = screenWidth * 0.3125;
+    final emptyBoxHeight = screenWidth * 0.0625;
+    final donationContainerHeight = screenWidth * 0.25;
+    final donationImageWidth = screenWidth * 0.18;
 
-    final emptybox = screenWidth * 0.0625;
-    final donationcontainerwidth = screenWidth * 0.75555555555;
-    final donationcontainerHeight = screenWidth * 0.25;
-    final donationimagewidth = screenWidth * 0.18;
+    final donationData = [
+      ['assets/images/beautifulstore_logo2.png', '아름다운 가게'],
+      ['assets/images/goodwill_logo.png', 'GoodWill'],
+      ['assets/images/newhope_logo.png', 'Newhope'],
+      ['assets/images/otcan_logo.png', 'Otcan'],
+    ];
+
+    final List<String> solutions =
+        widget.solution.split(',').map((e) => e.trim()).toList();
 
     return SafeArea(
       child: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: emptybox),
-              //tip container
-              Container(
-                padding: const EdgeInsets.all(20),
+              SizedBox(height: emptyBoxHeight),
+
+              // Tip Container
+              SizedBox(
                 width: tipContainerWidth,
-                height: tipContainerHeight,
-                decoration: BoxDecoration(
-                  color: const Color(0xffC0BCFF).withOpacity(0.25),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.lightbulb_outline,
-                          size: 30,
-                          color: Color(0xff081854),
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Tip!',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                // height: tipContainerHeight,
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffC0BCFF).withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.lightbulb_outline,
+                            size: 30,
                             color: Color(0xff081854),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      'If the clothes are too stained (over level 30), consider recycling them instead of donating.',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xff081854),
+                          SizedBox(width: 8),
+                          Text(
+                            'Tip!',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff081854),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 10),
+                      Text(
+                        'If the clothes are too stained (over level 30), consider recycling them instead of donating.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color(0xff081854),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
-              SizedBox(height: emptybox),
+              SizedBox(height: emptyBoxHeight),
 
-              //RadialGauge container
-              const RadialGauge(
-                value: 1,
+              // RadialGauge
+              RadialGauge(
+                value: widget.confidence * 100,
                 needleLength: 150,
               ),
-              SizedBox(height: emptybox),
 
-              //Donation List Container
+              SizedBox(height: emptyBoxHeight),
+
+              // Donation List Container
               Container(
                 width: screenWidth,
-                // 높이를 고정하지 않음
                 decoration: BoxDecoration(
                   color: const Color(0xffC0BCFF).withOpacity(0.25),
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: emptybox),
-                    DonationTile(
-                      width: tipContainerWidth,
-                      height: donationcontainerHeight,
-                      imageWidth: donationimagewidth,
-                      imagePath: 'assets/images/beautifulstore_logo2.png',
-                      title: '아름다운 가게',
-                      description: '지역사회와 함께하는 나눔 가게입니다.',
-                    ),
-                    // 다른 DonationTile 추가 가능
-                    SizedBox(height: emptybox),
-                    DonationTile(
-                      width: tipContainerWidth,
-                      height: donationcontainerHeight,
-                      imageWidth: donationimagewidth,
-                      imagePath: 'assets/images/goodwill_logo.png',
-                      title: 'GoodWill',
-                      description: '지역사회와 함께하는 나눔 가게입니다.',
-                    ),
-                    // 다른 DonationTile 추가 가능
-                    SizedBox(height: emptybox),
-                    DonationTile(
-                      width: tipContainerWidth,
-                      height: donationcontainerHeight,
-                      imageWidth: donationimagewidth,
-                      imagePath: 'assets/images/newhope_logo.png',
-                      title: 'Newhope',
-                      description: '지역사회와 함께하는 나눔 가게입니다.',
-                    ),
-                    // 다른 DonationTile 추가 가능
-                    SizedBox(height: emptybox),
-                    DonationTile(
-                      width: tipContainerWidth,
-                      height: donationcontainerHeight,
-                      imageWidth: donationimagewidth,
-                      imagePath: 'assets/images/otcan_logo.png',
-                      title: 'Otcan',
-                      description: '지역사회와 함께하는 나눔 가게입니다.',
-                    ),
-                    // 다른 DonationTile 추가 가능
-                    SizedBox(height: emptybox),
+                    SizedBox(height: emptyBoxHeight),
+                    if (widget.confidence * 100 <= 30)
+                      ...donationData.map(
+                        (data) => Padding(
+                          padding: EdgeInsets.only(
+                              bottom: emptyBoxHeight), // 기부 가능 -> 기부처
+                          child: DonationTile(
+                            width: tipContainerWidth,
+                            height: donationContainerHeight,
+                            imageWidth: donationImageWidth,
+                            imagePath: data[0],
+                            title: data[1],
+                            description: '지역사회와 함께하는 나눔 가게입니다.',
+                          ),
+                        ),
+                      ),
+                    if (widget.confidence * 100 > 30) // 기부 불가능 -> recycling 방법
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 16.0, right: 16.0, left: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '👚 Re-closet Recycling Solution ',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff8982FE),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              height: 1,
+                              decoration: const BoxDecoration(
+                                color: Color(0xff8982FE),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              children: solutions.map((sol) {
+                                return Container(
+                                  margin:
+                                      const EdgeInsets.only(right: 8), // 버튼 간격
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: const Color(0xff746BFF),
+                                  ),
+                                  child: Text(
+                                    sol,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              widget.response,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black87,
+                                height: 1.7,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
               ),
-              SizedBox(height: emptybox),
+
+              SizedBox(height: emptyBoxHeight),
             ],
           ),
         ),

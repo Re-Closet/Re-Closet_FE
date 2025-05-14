@@ -67,7 +67,7 @@ class _BasicLgButtonState extends State<BasicLgButton> {
             child: Text(
               widget.text, // <-- 수정: 전달받은 텍스트를 사용
               style: TextStyle(
-                fontSize: 17.6,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: widget.textColor,
               ),

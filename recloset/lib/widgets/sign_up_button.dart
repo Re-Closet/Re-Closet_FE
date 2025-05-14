@@ -42,6 +42,7 @@ class _SignUpButton extends State<SignUpButton> {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 40.0),
         child: AnimatedContainer(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
           duration: const Duration(milliseconds: 100),
           transform: _isPressed
               ? Matrix4.translationValues(0, 4, 0)
@@ -54,27 +55,25 @@ class _SignUpButton extends State<SignUpButton> {
           ),
           child: Center(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Image.asset(
-                    'assets/images/google_logo.png',
-                    width: 23.77,
-                    height: 25.71,
-                  ),
+                Image.asset(
+                  'assets/images/google_logo.png',
+                  width: 23.77,
+                  height: 25.71,
                 ),
+                const Spacer(),
                 Opacity(
                   opacity: 0.54,
                   child: Text(
                     widget.text, // <-- 수정: 전달받은 텍스트를 사용
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
                 ),
+                const Spacer(),
               ],
             ),
           ),

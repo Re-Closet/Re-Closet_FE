@@ -38,11 +38,14 @@ class _IntroScreenState extends State<IntroScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(
+              height: screenHeight * 0.09731,
+            ),
             const Text(
               'Recloset',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 30,
+                fontSize: 28,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -63,7 +66,7 @@ class _IntroScreenState extends State<IntroScreen> {
                     'Get started with \nDonating your clothes. ',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 23,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
