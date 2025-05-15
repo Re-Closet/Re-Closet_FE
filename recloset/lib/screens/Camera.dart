@@ -57,7 +57,7 @@ class _CameraScreenState extends State<CameraScreen>
 
       cameraController = CameraController(
         backCamera,
-        ResolutionPreset.high,
+        ResolutionPreset.medium,
         imageFormatGroup: ImageFormatGroup.yuv420,
         enableAudio: false,
       );
@@ -111,15 +111,46 @@ class _CameraScreenState extends State<CameraScreen>
               confidence: confidence,
               prediction: data['prediction'] ?? '',
               resultType: data['resultType'] ?? false,
+              rawJson: jsonResponse, // 정상일 때도 전달
             ),
           ),
         );
       } else {
-        print('이미지 분석 실패, 상태 코드: ${response.statusCode}');
-        print('서버 응답: ${response.body}');
+        // 서버 에러 응답 디버깅용
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AiResult(
+              response: 'Error',
+              solution: '',
+              confidence: 0.0,
+              prediction: '',
+              resultType: false,
+              rawJson: {
+                'statusCode': response.statusCode,
+                'body': response.body,
+              },
+            ),
+          ),
+        );
       }
     } catch (e) {
-      print('분석 중 오류 발생: $e');
+      // 네트워크 에러 등 디버깅용
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AiResult(
+            response: 'Exception',
+            solution: '',
+            confidence: 0.0,
+            prediction: '',
+            resultType: false,
+            rawJson: {
+              'error': e.toString(),
+            },
+          ),
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -230,6 +261,15 @@ class _CameraScreenState extends State<CameraScreen>
       child: SizedBox.expand(
         child: Stack(
           children: [
+            SizedBox(
+              width: 400,
+              height: 650,
+              child: Image.asset(
+                'assets/images/tshirt.png',
+                fit: BoxFit.fitWidth, // center crop 효과
+              ),
+            ),
+
             CameraPreview(cameraController!),
 
             if (_isAnalyzing)
@@ -339,8 +379,19 @@ class _CameraScreenState extends State<CameraScreen>
                   if (cameraController == null ||
                       !cameraController!.value.isInitialized) return;
 
-                  final XFile image = await cameraController!.takePicture();
-                  await analyzeImage(File(image.path));
+                  setState(() {
+                    _isAnalyzing = true;
+                  });
+
+                  try {
+                    final XFile image = await cameraController!.takePicture();
+                    await analyzeImage(File(image.path));
+                  } catch (e) {
+                    print('촬영 중 오류 발생: $e');
+                    setState(() {
+                      _isAnalyzing = false;
+                    });
+                  }
                 },
                 child: Container(
                   width: buttonDiameter,

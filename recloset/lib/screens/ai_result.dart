@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
@@ -13,6 +13,7 @@ class AiResult extends StatefulWidget {
   final double confidence;
   final String prediction;
   final bool resultType;
+  final Map<String, dynamic> rawJson;
 
   const AiResult({
     super.key,
@@ -21,6 +22,7 @@ class AiResult extends StatefulWidget {
     required this.confidence,
     required this.prediction,
     required this.resultType,
+    required this.rawJson,
   });
 
   @override
@@ -43,7 +45,6 @@ class _AiResultState extends State<AiResult> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     final tipContainerWidth = screenWidth * 0.903125;
-    final tipContainerHeight = screenWidth * 0.3125;
     final emptyBoxHeight = screenWidth * 0.0625;
     final donationContainerHeight = screenWidth * 0.25;
     final donationImageWidth = screenWidth * 0.18;
@@ -55,8 +56,16 @@ class _AiResultState extends State<AiResult> {
       ['assets/images/otcan_logo.png', 'Otcan'],
     ];
 
+    final recyclingData = [
+      ['assets/images/arket_logo.png', 'Arket'],
+      ['assets/images/hm_logo.png', 'H&M'],
+    ];
+
     final List<String> solutions =
         widget.solution.split(',').map((e) => e.trim()).toList();
+
+    final String prettyJson =
+        const JsonEncoder.withIndent('  ').convert(widget.rawJson);
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -68,7 +77,6 @@ class _AiResultState extends State<AiResult> {
               // Tip Container
               SizedBox(
                 width: tipContainerWidth,
-                // height: tipContainerHeight,
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -132,8 +140,7 @@ class _AiResultState extends State<AiResult> {
                     if (widget.confidence * 100 <= 30)
                       ...donationData.map(
                         (data) => Padding(
-                          padding: EdgeInsets.only(
-                              bottom: emptyBoxHeight), // 기부 가능 -> 기부처
+                          padding: EdgeInsets.only(bottom: emptyBoxHeight),
                           child: DonationTile(
                             width: tipContainerWidth,
                             height: donationContainerHeight,
@@ -144,7 +151,7 @@ class _AiResultState extends State<AiResult> {
                           ),
                         ),
                       ),
-                    if (widget.confidence * 100 > 30) // 기부 불가능 -> recycling 방법
+                    if (widget.confidence * 100 > 30)
                       Padding(
                         padding: const EdgeInsets.only(
                             bottom: 16.0, right: 16.0, left: 16.0),
@@ -152,14 +159,11 @@ class _AiResultState extends State<AiResult> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              '👚 Re-closet Recycling Solution ',
+                              '👚 Re-closet Contamination Class ',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Color(0xff8982FE),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 10,
                             ),
                             Container(
                               height: 1,
@@ -167,14 +171,38 @@ class _AiResultState extends State<AiResult> {
                                 color: Color(0xff8982FE),
                               ),
                             ),
-                            const SizedBox(
-                              height: 20,
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Text(
+                                'Detected: ${widget.prediction}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Color(0xff4285F4),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
+                            const SizedBox(height: 30),
+                            const Text(
+                              '👖 Re-closet Recycling Solution ',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff8982FE),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              height: 1,
+                              decoration: const BoxDecoration(
+                                color: Color(0xff8982FE),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
                             Row(
                               children: solutions.map((sol) {
                                 return Container(
-                                  margin:
-                                      const EdgeInsets.only(right: 8), // 버튼 간격
+                                  margin: const EdgeInsets.only(right: 8),
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
@@ -188,15 +216,42 @@ class _AiResultState extends State<AiResult> {
                                 );
                               }).toList(),
                             ),
-                            const SizedBox(
-                              height: 10,
-                            ),
+                            const SizedBox(height: 10),
                             Text(
                               widget.response,
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.black87,
                                 height: 1.7,
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                            const Text(
+                              '📍 Go to recycling site ',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Color(0xff8982FE),
+                              ),
+                            ),
+                            Container(
+                              height: 1,
+                              decoration: const BoxDecoration(
+                                color: Color(0xff8982FE),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ...recyclingData.map(
+                              (data) => Padding(
+                                padding:
+                                    EdgeInsets.only(bottom: emptyBoxHeight),
+                                child: DonationTile(
+                                  width: tipContainerWidth,
+                                  height: donationContainerHeight,
+                                  imageWidth: donationImageWidth,
+                                  imagePath: data[0],
+                                  title: data[1],
+                                  description: '지역사회와 함께하는 나눔 가게입니다.',
+                                ),
                               ),
                             ),
                           ],
@@ -207,6 +262,61 @@ class _AiResultState extends State<AiResult> {
               ),
 
               SizedBox(height: emptyBoxHeight),
+
+              // 🛠 Raw JSON Debug Section
+              // 🛠 Raw JSON Debug Section
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Raw Debug',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: const Color(0xfff5f5f5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            content: SingleChildScrollView(
+                              child: Text(
+                                prettyJson,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontFamily: 'monospace',
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            behavior: SnackBarBehavior.floating,
+                            margin: const EdgeInsets.all(16),
+                            duration: const Duration(seconds: 5),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.code, color: Color(0xff081854)),
+                      label: const Text(
+                        'Show Raw JSON',
+                        style: TextStyle(
+                          color: Color(0xff081854),
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xfff5f5f5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
