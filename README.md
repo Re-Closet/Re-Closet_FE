@@ -1,6 +1,6 @@
 
 # 👚 recloset
-![AI Service](./github_images/An%20AI%20service%20that%20helps%20recycle%20or%20donate%20clothes.jpg)
+![AI Service](https://github.com/Re-Closet/.github/raw/main/White%20Purple%20Gradient%20Mobile%20Apps%20Presentation%20%20(1).jpg?raw=true)
 
 
 ## 💡 Overview - What is Recloset?
