@@ -439,8 +439,10 @@ class _CameraScreenState extends State<CameraScreen>
               child: GestureDetector(
                 onTap: () async {
                   final ImagePicker picker = ImagePicker();
-                  final XFile? image =
-                      await picker.pickImage(source: ImageSource.gallery);
+                  final XFile? image = await picker.pickImage(
+                    source: ImageSource.gallery,
+                    imageQuality: 50,
+                  );
                   if (image != null) {
                     await analyzeImage(File(image.path));
                   }
