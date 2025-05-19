@@ -40,14 +40,9 @@ Recloset offers a smart and sustainable approach to tackle fast fashion challeng
 ## How to Run
 > Camera preview works only on Android devices.
 
-
 APK Download: [Download Here](https://your-app-link.com)
 
-Screenshots:
 
-| Home Screen | Features Screen |
-|-------------|-----------------|
-| ![Home](assets/screenshots/home.png) | ![Features](assets/screenshots/features.png) |
 
 ## Tech Stack
 
