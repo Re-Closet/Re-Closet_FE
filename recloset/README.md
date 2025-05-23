@@ -1,6 +1,6 @@
 
 # 👚 recloset
-![AI Service](https://github.com/Re-Closet/.github/raw/main/White%20Purple%20Gradient%20Mobile%20Apps%20Presentation%20%20(1).jpg?raw=true)
+![AI Service](./github_images/An%20AI%20service%20that%20helps%20recycle%20or%20donate%20clothes.jpg)
 
 
 ## 💡 Overview - What is Recloset?
@@ -40,8 +40,9 @@ Recloset offers a smart and sustainable approach to tackle fast fashion challeng
 ## How to Run
 > Camera preview works only on Android devices.
 
+APK Download: [Download Here](https://your-app-link.com)
 
-APK Download: [Download Here](https://drive.google.com/drive/folders/1RKDA-U6j8zne0D03vt6sYnwWeh4Q79F4)
+
 
 ## Tech Stack
 
